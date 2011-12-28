@@ -20,7 +20,7 @@
 # Boston, MA 02110-1301 USA.
 #++
 
-require 'gst'
+require 'gir_ffi-gst'
 
 module Alexandria
   module UI

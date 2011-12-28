@@ -1,4 +1,5 @@
 # Copyright (C) 2011 Cathal Mc Ginley
+# Copyright (C) 2015 Matijs van Zuijlen
 #
 # Alexandria is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License as
@@ -22,14 +23,13 @@ module Alexandria
         file = File.join(Alexandria::Config::DATA_DIR, 'glade', filename)
         builder = Gtk::Builder.new
         builder.add_from_file(file)
-        builder.connect_signals do |handler|
-          begin
-            method(handler)
-          rescue => ex
-            puts "Error: #{ex}" if $DEBUG
-            nil
-          end
-        end
+        # FIXME: Add override defining connect_signals.
+        # FIXME: Add back exception handler
+        builder.connect_signals_full Proc.new { |b,o,sn,hn,co,f,ud|
+          sn.gsub! /_/, '-'
+          GObject.signal_connect o, sn, &self.method(hn)
+        }, nil
+
         widget_names.each do |name|
           begin
             instance_variable_set("@#{name}".intern, builder[name.to_s])

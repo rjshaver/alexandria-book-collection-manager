@@ -33,8 +33,6 @@
 #   false
 # end
 
-require 'cairo'
-require 'gtk2'
 require 'monitor'
 
 module Gtk

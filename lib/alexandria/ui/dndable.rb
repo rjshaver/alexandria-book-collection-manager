@@ -1,5 +1,6 @@
 # Copyright (C) 2004-2006 Laurent Sansonetti
 # Copyright (C) 2008 Joseph Method
+# Copyright (C) 2015 Matijs van Zuijlen
 #
 # Alexandria is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License as
@@ -18,7 +19,7 @@
 
 module Alexandria
   module UI
-    BOOKS_TARGET_TABLE = [['ALEXANDRIA_BOOKS', Gtk::Drag::TARGET_SAME_APP, 0]]
+    BOOKS_TARGET_TABLE = [["ALEXANDRIA_BOOKS", :same_app, 0]]
 
     module DragAndDropable
       BADGE_MARKUP = "<span weight=\"heavy\" foreground=\"white\">%d</span>"
@@ -54,12 +55,12 @@ module Alexandria
             pixmap.draw_layout(Gdk::GC.new(pixmap), x, y, layout)
 
             # And set the drag icon.
-            Gtk::Drag.set_icon(drag_context,
-                               pixmap.colormap,
-                               pixmap,
-                               mask,
-                               10,
-                               10)
+            Gtk.drag_set_icon_pixbuf(drag_context,
+                                     pixmap.colormap,
+                                     pixmap,
+                                     mask,
+                                     10,
+                                     10)
           end
         end
 
@@ -71,9 +72,9 @@ module Alexandria
           end
         end
 
-        view.enable_model_drag_source(Gdk::Window::BUTTON1_MASK,
+        view.enable_model_drag_source(:button1_mask,
                                       Alexandria::UI::BOOKS_TARGET_TABLE,
-                                      Gdk::DragContext::ACTION_MOVE)
+                                      :move)
       end
     end
   end

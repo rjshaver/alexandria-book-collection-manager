@@ -1,4 +1,5 @@
 # Copyright (C) 2004-2006 Laurent Sansonetti
+# Copyright (C) 2015 Matijs van Zuijlen
 #
 # Alexandria is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License as
@@ -15,7 +16,10 @@
 # write to the Free Software Foundation, Inc., 51 Franklin Street,
 # Fifth Floor, Boston, MA 02110-1301 USA.
 
-require 'gdk_pixbuf2'
+require 'gir_ffi-gtk2'
+Gtk.init
+
+GirFFI.setup 'GdkPixbuf', '2.0'
 
 require 'alexandria/ui/gtk_thread_help'
 require 'alexandria/ui/icons'

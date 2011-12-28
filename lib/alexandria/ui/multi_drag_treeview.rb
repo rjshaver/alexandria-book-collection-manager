@@ -22,10 +22,15 @@ class Gdk::Event
   end
 end
 
+module Gtk
+  load_class :TreeView
+end
+
 class Gtk::TreeView
   # include Alexandria::Logging
 
-  class Context < Struct.new(:pressed_button,
+  # FIXME: Plain 'Struct' is resolved as Gtk::TreeView::Struct.
+  class Context < ::Struct.new(:pressed_button,
                              :x,
                              :y,
                              :cell_x,

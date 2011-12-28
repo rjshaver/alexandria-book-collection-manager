@@ -19,13 +19,23 @@
 
 class CellRendererToggle < Gtk::CellRendererToggle
   attr_accessor :text
-  type_register
-  install_property(GLib::Param::String.new(
-    'text',
-    'text',
-    'Some damn value',
-    '',
-    GLib::Param::READABLE | GLib::Param::WRITABLE))
+  # FIXME: Examine type derivation in GirFFI.
+  #  type_register
+  #  install_property(GLib::Param::String.new(
+  #  type_register
+  #  install_property(GLib::Param::String.new(
+  #    'text',
+  #    'text',
+  #    'Some damn value',
+  #    '',
+  #    GLib::Param::READABLE | GLib::Param::WRITABLE))
+end
+#GObject.type_register CellRendererToggle
+
+module Gtk
+  load_class :ActionGroup
+  load_class :IconView
+  load_class :TreeView
 end
 
 class Gtk::ActionGroup

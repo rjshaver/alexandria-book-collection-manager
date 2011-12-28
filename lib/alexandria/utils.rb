@@ -1,4 +1,5 @@
 # Copyright (C) 2005-2006 Laurent Sansonetti
+# Copyright (C) 2015 Matijs van Zuijlen
 #
 # Alexandria is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License as
@@ -15,7 +16,8 @@
 # write to the Free Software Foundation, Inc., 51 Franklin Street,
 # Fifth Floor, Boston, MA 02110-1301 USA.
 
-require 'glib2'
+# FIXME: Would like to just require ffi-glib.
+require 'gir_ffi'
 
 class String
   # Converts this string into the desired charset.
