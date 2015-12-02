@@ -1,7 +1,7 @@
 # Copyright (C) 2004-2006 Laurent Sansonetti
 # Copyright (C) 2008 Joseph Method
 # Copyright (C) 2010 Cathal Mc Ginley
-# Copyright (C) 2011 Matijs van Zuijlen
+# Copyright (C) 2011, 2015 Matijs van Zuijlen
 #
 # Alexandria is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License aso
@@ -17,6 +17,23 @@
 # License along with Alexandria; see the file COPYING.  If not,
 # write to the Free Software Foundation, Inc., 51 Franklin Street,
 # Fifth Floor, Boston, MA 02110-1301 USA.
+
+module Gtk
+  load_class :TreeViewColumn
+
+  class TreeViewColumn
+    # FIXME: Move to gir_ffi-gtk
+    def self.new_with_attributes(title, renderer, attributes = {})
+      new.tap do |column|
+        column.set_title title
+        column.pack_start(renderer, false)
+        attributes.each do |name, id|
+          column.add_attribute(renderer, name.to_s, id)
+        end
+      end
+    end
+  end
+end
 
 module Alexandria
   module UI
@@ -50,15 +67,18 @@ module Alexandria
       def setup_title_column
         title = _('Title')
         log.debug { 'Create listview column for %s' % title }
-        column = Gtk::TreeViewColumn.new(title)
+        column = Gtk::TreeViewColumn.new
+        column.set_title title
         column.widget = Gtk::Label.new(title).show
         renderer = Gtk::CellRendererPixbuf.new
         column.pack_start(renderer, false)
-        column.set_cell_data_func(renderer) do |_col, cell, _model, iter|
+
+        # FIXME: Provide nicer access to methods with callback arguments
+        column.set_cell_data_func(renderer, proc do |_col, cell, _model, iter|
           iter = @listview_model.convert_iter_to_child_iter(iter)
           iter = @filtered_model.convert_iter_to_child_iter(iter)
           cell.pixbuf = iter[Columns::COVER_LIST]
-        end
+        end, nil, nil)
         renderer = Gtk::CellRendererText.new
         renderer.ellipsize = Pango::ELLIPSIZE_END if Pango.ellipsizable?
         # Editable tree views are behaving strangely
@@ -66,12 +86,12 @@ module Alexandria
 
         column.pack_start(renderer, true)
 
-        column.set_cell_data_func(renderer) do |_col, cell, _model, iter|
+        column.set_cell_data_func(renderer, proc do |_col, cell, _model, iter|
           iter = @listview_model.convert_iter_to_child_iter(iter)
           iter = @filtered_model.convert_iter_to_child_iter(iter)
           cell.text = iter[Columns::TITLE]
           cell.editable = false # true
-        end
+        end, nil, nil)
 
         column.sort_column_id = Columns::TITLE
         column.resizable = true
@@ -125,7 +145,7 @@ module Alexandria
           setup_check_column title, iterid
         end
         setup_rating_column
-        @listview.selection.mode = Gtk::SELECTION_MULTIPLE
+        @listview.selection.mode = :multiple
         @listview.selection.signal_connect('changed') do
           log.debug { 'changed' }
           @parent.on_books_selection_changed
@@ -141,8 +161,8 @@ module Alexandria
         log.debug { 'Create listview column for tags...' }
         renderer = Gtk::CellRendererText.new
         renderer.ellipsize = Pango::ELLIPSIZE_END if Pango.ellipsizable?
-        column = Gtk::TreeViewColumn.new(title, renderer,
-                                         text: Columns::TAGS)
+        column = Gtk::TreeViewColumn.new_with_attributes(title, renderer,
+                                                         text: Columns::TAGS)
         column.widget = Gtk::Label.new(title).show
         column.sort_column_id = Columns::TAGS
         column.resizable = true
@@ -164,21 +184,22 @@ module Alexandria
       def setup_rating_column
         title = _('Rating')
         log.debug { 'Create listview column for %s...' % title }
-        column = Gtk::TreeViewColumn.new(title)
+        column = Gtk::TreeViewColumn.new
+        column.set_title title
         column.widget = Gtk::Label.new(title).show
-        column.sizing = Gtk::TreeViewColumn::FIXED
+        column.sizing = :fixed
         column.fixed_width = column.min_width = column.max_width =
           (Icons::STAR_SET.width + 1) * MAX_RATING_STARS
         MAX_RATING_STARS.times do |i|
           renderer = Gtk::CellRendererPixbuf.new
           column.pack_start(renderer, false)
-          column.set_cell_data_func(renderer) do |_col, cell, _model, iter|
+          column.set_cell_data_func(renderer, proc do |_col, cell, _model, iter|
             iter = @listview_model.convert_iter_to_child_iter(iter)
             iter = @filtered_model.convert_iter_to_child_iter(iter)
             rating = (iter[Columns::RATING] - MAX_RATING_STARS).abs
             cell.pixbuf = rating >= i.succ ?
               Icons::STAR_SET : Icons::STAR_UNSET
-          end
+          end, nil, nil)
         end
         column.sort_column_id = Columns::RATING
         column.resizable = false
@@ -224,7 +245,7 @@ module Alexandria
             log.error { "toggle failed for path #{path} #{e}\n" + e.backtrace.join("\n") }
           end
         end
-        column = Gtk::TreeViewColumn.new(title, renderer, text: iterid)
+        column = Gtk::TreeViewColumn.new_with_attributes(title, renderer, text: iterid)
         column.widget = Gtk::Label.new(title).show
         column.sort_column_id = iterid
         column.resizable = true
@@ -235,7 +256,7 @@ module Alexandria
           cell.activatable = true
         end
         log.debug { "Setting cell_data_func for #{renderer}" }
-        column.set_cell_data_func(renderer) do |_col, cell, _model, iter|
+        column.set_cell_data_func(renderer, proc do |_col, cell, _model, iter|
           iter = @listview_model.convert_iter_to_child_iter(iter)
           iter = @filtered_model.convert_iter_to_child_iter(iter)
           case iterid
@@ -248,7 +269,7 @@ module Alexandria
             own_state = iter[Columns::OWN]
             cell.inconsistent = own_state
           end
-        end
+        end, nil, nil)
         log.debug { "append_column #{column}" }
         @listview.append_column(column)
       end
@@ -257,8 +278,8 @@ module Alexandria
         log.debug { 'Create listview column for %s...' % title }
         renderer = Gtk::CellRendererText.new
         renderer.ellipsize = Pango::ELLIPSIZE_END if Pango.ellipsizable?
-        column = Gtk::TreeViewColumn.new(title, renderer,
-                                         text: iterid)
+        column = Gtk::TreeViewColumn.new_with_attributes(title, renderer,
+                                                         text: iterid)
         column.widget = Gtk::Label.new(title).show
         column.sort_column_id = iterid
         column.resizable = true
