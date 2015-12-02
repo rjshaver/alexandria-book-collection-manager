@@ -97,30 +97,32 @@ module Alexandria
       end
 
       def setup_sidepane
-        @library_listview.model = Gtk::ListStore.new(Gdk::Pixbuf,
-                                                     String,
-                                                     TrueClass,
-                                                     TrueClass)
+        # FIXME: Switch to Gtk+ 3 and use `.new`. 
+        @library_listview.model = Gtk::ListStore.newv([GdkPixbuf::Pixbuf.gtype,
+                                                       GObject::TYPE_STRING,
+                                                       GObject::TYPE_BOOLEAN,
+                                                       GObject::TYPE_BOOLEAN])
         @library_separator_iter = nil
         @libraries.all_regular_libraries.each { |x| @parent.append_library(x) }
         @libraries.all_smart_libraries.each { |x| @parent.append_library(x) }
 
         renderer = Gtk::CellRendererPixbuf.new
-        column = Gtk::TreeViewColumn.new(_('Library'))
+        column = Gtk::TreeViewColumn.new
+        column.set_title(_('Library'))
         column.pack_start(renderer, false)
-        column.set_cell_data_func(renderer) do |_col, cell, _model, iter|
+        column.set_cell_data_func(renderer, proc do |_col, cell, _model, iter|
           # log.debug { "sidepane: cell_data_func #{col}, #{cell}, #{iter}" }
           cell.pixbuf = iter[0]
-        end
+        end, nil, nil)
         renderer = Gtk::CellRendererText.new
         renderer.ellipsize = Pango::ELLIPSIZE_END if Pango.ellipsizable?
         column.pack_start(renderer, true)
-        column.set_cell_data_func(renderer) do |_col, cell, _model, iter|
+        column.set_cell_data_func(renderer, proc do |_col, cell, _model, iter|
           # log.debug { "sidepane: editable #{cell}, #{iter} #{iter[1]}: #{iter[2]}" }
           cell.text = iter[1]
           cell.editable = iter[2]
           # log.debug { "exit sidepane: editable #{cell}, #{iter}" }
-        end
+        end, nil, nil)
         renderer.signal_connect('edited', &method(:on_edited_library))
         @library_listview.append_column(column)
 
@@ -137,7 +139,7 @@ module Alexandria
 
         @library_listview.enable_model_drag_dest(
           BOOKS_TARGET_TABLE,
-          Gdk::DragContext::ACTION_MOVE)
+          :move)
 
         @library_listview.signal_connect('drag-motion') do |_widget, drag_context, x, y, time, _data|
           log.debug { 'drag-motion' }
