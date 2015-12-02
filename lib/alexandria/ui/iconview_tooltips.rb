@@ -2,7 +2,7 @@
 #
 # Copyright (C) 2007 kksou
 # Copyright (C) 2008,2009 Cathal Mc Ginley
-# Copyright (C) 2011, 2014 Matijs van Zuijlen
+# Copyright (C) 2011, 2014, 2015 Matijs van Zuijlen
 #
 # Alexandria is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License as
@@ -33,17 +33,17 @@ class IconViewTooltips
   include Alexandria::Logging
 
   def initialize(view)
-    @tooltip_window = Gtk::Window.new(Gtk::Window::POPUP)
+    @tooltip_window = Gtk::Window.new(:popup)
     @tooltip_window.name = 'gtk-tooltips'
     @tooltip_window.resizable = false
     @tooltip_window.border_width = 4
     @tooltip_window.app_paintable = true
 
-    @tooltip_window.signal_connect('expose_event') { |window, event|
+    @tooltip_window.signal_connect('expose-event') { |window, event|
       on_expose(window, event)
     }
 
-    @tooltip_window.signal_connect('leave_notify_event') { |vw, event|
+    @tooltip_window.signal_connect('leave-notify-event') { |vw, event|
       on_leave(vw, event)
     }
 
