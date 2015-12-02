@@ -31,11 +31,7 @@ module Alexandria
         }, nil
 
         widget_names.each do |name|
-          begin
-            instance_variable_set("@#{name}".intern, builder[name.to_s])
-          rescue => err
-            puts "Error: #{err}" if $DEBUG
-          end
+          instance_variable_set("@#{name}".intern, builder.get_object(name.to_s))
         end
       end
     end

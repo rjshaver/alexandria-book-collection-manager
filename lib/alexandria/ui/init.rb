@@ -53,6 +53,20 @@ class Gtk::IconView
   def unfreeze
     self.model = @old_model
   end
+
+  # FIXME: Extract to gir_ffi-gtk.
+  alias_method :old_enable_model_drag_source, :enable_model_drag_source
+  def enable_model_drag_source(start_button_mask, targets, actions)
+    entries = targets.map do |target, flags, info|
+      Gtk::TargetEntry.new.tap do |entry|
+        entry.target = target
+        entry.flags = Gtk::TargetFlags[flags]
+        entry.info = info
+      end
+    end
+    arr = GirFFI::SizedArray.from(Gtk::TargetEntry, -1, entries)
+    old_enable_model_drag_source(start_button_mask, arr, entries.count, actions)
+  end
 end
 
 class Gtk::TreeView

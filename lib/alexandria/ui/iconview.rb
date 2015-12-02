@@ -44,7 +44,8 @@ module Alexandria
 
       def setup_books_iconview
         log.info { "setup_books_iconview #{@iconview_model.inspect}" }
-        @iconview.model = @iconview_model
+        # FIXME: Make #model= work
+        @iconview.set_model @iconview_model
         log.info { "now @iconview.model = #{@iconview.model.inspect}" }
         @iconview.selection_mode = :multiple
         @iconview.text_column = Columns::TITLE_REDUCED

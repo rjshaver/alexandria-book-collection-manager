@@ -17,6 +17,20 @@
 # write to the Free Software Foundation, Inc., 51 Franklin Street,
 # Fifth Floor, Boston, MA 02110-1301 USA.
 
+module Gtk
+  load_class :Container
+
+  class Container
+    # FIXME: Move to gir_ffi-gtk
+    def add_with_properties(widget, properties)
+      add(widget)
+      properties.each do |key, value|
+        child_set_property(widget, key.to_s, value)
+      end
+    end
+  end
+end
+
 module Alexandria
   module UI
     MAX_RATING_STARS = 5
@@ -89,8 +103,8 @@ module Alexandria
       end
 
       def setup_dependents
-        @listview_model = Gtk::TreeModelSort.new(@filtered_model)
-        @iconview_model = Gtk::TreeModelSort.new(@filtered_model)
+        @listview_model = @filtered_model.sort_new_with_model
+        @iconview_model = @filtered_model.sort_new_with_model
         @listview_manager = ListViewManager.new @listview, self
         @iconview_manager = IconViewManager.new @iconview, self
         @sidepane_manager = SidePaneManager.new @library_listview, self
@@ -115,29 +129,29 @@ module Alexandria
         add_main_toolbar_items
         @toolbar = @uimanager.get_widget('/MainToolbar')
         @toolbar.show_arrow = true
-        @toolbar.insert(-1, Gtk::SeparatorToolItem.new)
+        @toolbar.insert(Gtk::SeparatorToolItem.new, -1)
         setup_toolbar_combobox
         setup_toolbar_filter_entry
-        @toolbar.insert(-1, Gtk::SeparatorToolItem.new)
+        @toolbar.insert(Gtk::SeparatorToolItem.new, -1)
         setup_toolbar_viewas
         @toolbar.show_all
         @actiongroup['Undo'].sensitive = @actiongroup['Redo'].sensitive = false
         UndoManager.instance.add_observer(self)
-        @vbox1.add(@toolbar,  position: 1, expand: false, fill: false)
+        @vbox1.add_with_properties(@toolbar, position: 1, expand: false, fill: false)
       end
 
       def add_main_toolbar_items
         mid = @uimanager.new_merge_id
         @uimanager.add_ui(mid, 'ui/', 'MainToolbar', 'MainToolbar',
-                          Gtk::UIManager::TOOLBAR, false)
+                          :toolbar, false)
         @uimanager.add_ui(mid, 'ui/MainToolbar/', 'New', 'New',
-                          Gtk::UIManager::TOOLITEM, false)
+                          :toolitem, false)
         @uimanager.add_ui(mid, 'ui/MainToolbar/', 'AddBook', 'AddBook',
-                          Gtk::UIManager::TOOLITEM, false)
+                          :toolitem, false)
         # @uimanager.add_ui(mid, "ui/MainToolbar/", "sep", "sep",
-        #                  Gtk::UIManager::SEPARATOR, false)
+        #                  :separator, false)
         # @uimanager.add_ui(mid, "ui/MainToolbar/", "Refresh", "Refresh",
-        #                  Gtk::UIManager::TOOLITEM, false)
+        #                  :toolitem, false)
       end
 
       def setup_toolbar_filter_entry
@@ -148,18 +162,18 @@ module Alexandria
         @toolitem.border_width = 5
         @tooltips.set_tip(@filter_entry,
                           _('Type here the search criterion'), nil)
-        @toolitem << @filter_entry
-        @toolbar.insert(-1, @toolitem)
+        @toolitem.add @filter_entry
+        @toolbar.insert(@toolitem, -1)
       end
 
       def setup_toolbar_combobox
         @tooltips = Gtk::Tooltips.new
 
-        cb = Gtk::ComboBox.new
-        cb.set_row_separator_func do |_model, iter|
+        cb = Gtk::ComboBoxText.new
+        cb.set_row_separator_func(proc do |model, iter|
           # log.debug { "row_separator" }
-          iter[0] == '-'
-        end
+          model.get_value(iter, 0) == '-'
+        end, nil, nil)
         [_('Match everything'),
          '-',
          _('Title contains'),
@@ -177,16 +191,16 @@ module Alexandria
         # Put the combo box in a event box because it is not currently
         # possible assign a tooltip to a combo box.
         eb = Gtk::EventBox.new
-        eb << cb
+        eb.add cb
         @toolitem = Gtk::ToolItem.new
         @toolitem.border_width = 5
-        @toolitem << eb
-        @toolbar.insert(-1, @toolitem)
+        @toolitem.add eb
+        @toolbar.insert(@toolitem, -1)
         @tooltips.set_tip(eb, _('Change the search type'), nil)
       end
 
       def setup_toolbar_viewas
-        @toolbar_view_as = Gtk::ComboBox.new
+        @toolbar_view_as = Gtk::ComboBoxText.new
         @toolbar_view_as.append_text(_('View as Icons'))
         @toolbar_view_as.append_text(_('View as List'))
         @toolbar_view_as.active = 0
@@ -196,11 +210,11 @@ module Alexandria
         # Put the combo box in a event box because it is not currently
         # possible assign a tooltip to a combo box.
         eb = Gtk::EventBox.new
-        eb << @toolbar_view_as
+        eb.add @toolbar_view_as
         @toolitem = Gtk::ToolItem.new
         @toolitem.border_width = 5
-        @toolitem << eb
-        @toolbar.insert(-1, @toolitem)
+        @toolitem.add eb
+        @toolbar.insert(@toolitem, -1)
         @tooltips.set_tip(eb, _('Choose how to show books'), nil)
       end
 
@@ -214,7 +228,7 @@ module Alexandria
            'ui/NoBookPopup/OnlineInformation/'].each do |path|
              log.debug { "Adding #{name} to #{path}" }
              @uimanager.add_ui(mid, path, name, name,
-                               Gtk::UIManager::MENUITEM, false)
+                               :menuitem, false)
            end
         end
       end
@@ -222,8 +236,8 @@ module Alexandria
       def add_menus_and_popups_from_xml
         log.debug { 'add_menus_and_popups_from_xml' }
         ['menus.xml', 'popups.xml'].each do |ui_file|
-          @uimanager.add_ui(File.join(Alexandria::Config::DATA_DIR,
-                                      'ui', ui_file))
+          @uimanager.add_ui_from_file(File.join(Alexandria::Config::DATA_DIR,
+                                                'ui', ui_file))
         end
       end
 
@@ -234,19 +248,21 @@ module Alexandria
 
       def setup_menus
         @menubar = @uimanager.get_widget('/MainMenubar')
-        @vbox1.add(@menubar,  position: 0, expand: false, fill: false)
+        @vbox1.add_with_properties(@menubar,  position: 0, expand: false, fill: false)
       end
 
       def setup_dialog_hooks
         log.debug { 'setup_dialog_hooks' }
-        Gtk::AboutDialog.set_url_hook do |_about, link|
-          log.debug { 'set_url_hook' }
-          open_web_browser(link)
-        end
-        Gtk::AboutDialog.set_email_hook do |_about, link|
-          log.debug { 'set_email_hook' }
-          open_email_client('mailto:' + link)
-        end
+        # NOTE: Disabled because the default action is fine.
+        #Gtk::AboutDialog.set_url_hook do |_about, link|
+          #log.debug { 'set_url_hook' }
+          #open_web_browser(link)
+        #end
+        # NOTE: Disabled because the default action is fine.
+        #Gtk::AboutDialog.set_email_hook do |_about, link|
+          #log.debug { 'set_email_hook' }
+          #open_email_client('mailto:' + link)
+        #end
       end
 
       def setup_popups
@@ -269,30 +285,30 @@ module Alexandria
         # The active model.
 
         list = [
-          Gdk::Pixbuf,    # COVER_LIST
-          Gdk::Pixbuf,    # COVER_ICON
-          String,         # TITLE
-          String,         # TITLE_REDUCED
-          String,         # AUTHORS
-          String,         # ISBN
-          String,         # PUBLISHER
-          String,         # PUBLISH_DATE
-          String,         # EDITION
-          Integer,        # RATING
-          String,         # IDENT
-          String,         # NOTES
-          TrueClass,      # REDD
-          TrueClass,      # OWN
-          TrueClass,      # WANT
-          String,         # TAGS
-          String          # LOANED TO
+          GdkPixbuf::Pixbuf.gtype, # COVER_LIST
+          GdkPixbuf::Pixbuf.gtype, # COVER_ICON
+          GObject::TYPE_STRING,    # TITLE
+          GObject::TYPE_STRING,    # TITLE_REDUCED
+          GObject::TYPE_STRING,    # AUTHORS
+          GObject::TYPE_STRING,    # ISBN
+          GObject::TYPE_STRING,    # PUBLISHER
+          GObject::TYPE_STRING,    # PUBLISH_DATE
+          GObject::TYPE_STRING,    # EDITION
+          GObject::TYPE_INT,       # RATING
+          GObject::TYPE_STRING,    # IDENT
+          GObject::TYPE_STRING,    # NOTES
+          GObject::TYPE_BOOLEAN,   # REDD
+          GObject::TYPE_BOOLEAN,   # OWN
+          GObject::TYPE_BOOLEAN,   # WANT
+          GObject::TYPE_STRING,    # TAGS
+          GObject::TYPE_STRING,    # LOANED TO
         ]
 
-        @model = Gtk::ListStore.new(*list)
+        @model = Gtk::ListStore.newv(list)
 
         # Filter books according to the search toolbar widgets.
-        @filtered_model = Gtk::TreeModelFilter.new(@model)
-        @filtered_model.set_visible_func do |_model, iter|
+        @filtered_model = @model.filter_new(nil)
+        @filtered_model.set_visible_func(proc do |_model, iter|
           # log.debug { "visible_func" }
           @filter_books_mode ||= 0
           filter = @filter_entry.text
@@ -316,7 +332,7 @@ module Alexandria
                    end
             !data.nil? and data.downcase.include?(filter.downcase)
           end
-        end
+        end, nil, nil)
 
         # Give filter entry the initial keyboard focus.
         @filter_entry.grab_focus
@@ -536,7 +552,7 @@ module Alexandria
         @clicking_on_sidepane = false
       end
 
-      def on_switch_page
+      def on_switch_page(*_args)
         log.debug { 'on_switch_page' }
         @actiongroup['ArrangeIcons'].sensitive = @notebook.page == 0
         on_books_selection_changed
@@ -870,7 +886,8 @@ module Alexandria
 
       def append_library(library, autoselect = false)
         log.debug { "append_library #{library.name}" }
-        model = @library_listview.model
+        # FIXME: Make #model work as well
+        model = @library_listview.get_model
         is_smart = library.is_a?(SmartLibrary)
         if is_smart
           if @library_separator_iter.nil?
@@ -885,10 +902,11 @@ module Alexandria
                  end
         end
 
-        iter[0] = is_smart ? Icons::SMART_LIBRARY_SMALL : Icons::LIBRARY_SMALL
-        iter[1] = library.name
-        iter[2] = true      # editable?
-        iter[3] = false     # separator?
+        model.set_value(iter, 0, is_smart ? Icons::SMART_LIBRARY_SMALL : Icons::LIBRARY_SMALL)
+        model.set_value(iter, 1, library.name)
+        model.set_value(iter, 2, true)      # editable?
+        model.set_value(iter, 3, false)     # separator?
+
         if autoselect
           @library_listview.set_cursor(iter.path,
                                        @library_listview.get_column(0),
@@ -900,11 +918,13 @@ module Alexandria
 
       def append_library_separator
         log.debug { 'append_library_separator' }
-        iter = @library_listview.model.append
-        iter[0] = nil
-        iter[1] = nil
-        iter[2] = false     # editable?
-        iter[3] = true      # separator?
+        model = @library_listview.model
+        iter = model.append
+        # FIXME: Override #set_value to fetch the column gtype from the model.
+        model.set_value(iter, 0, GObject::Value.for_gtype(GdkPixbuf::Pixbuf.gtype))
+        model.set_value(iter, 1, GObject::Value.for_gtype(GObject::TYPE_STRING))
+        model.set_value(iter, 2, false)     # editable?
+        model.set_value(iter, 3, true)      # separator?
         iter
       end
 
@@ -963,8 +983,10 @@ module Alexandria
 
       def selected_library
         log.debug { 'selected_library' }
-        if (iter = @library_listview.selection.selected)
-          @libraries.all_libraries.find { |x| x.name == iter[1] }
+        result, model, iter = @library_listview.selection.selected
+        if result
+          wanted_name = model.get_value(iter, 1)
+          @libraries.all_libraries.find { |x| x.name == wanted_name }
         else
           @libraries.all_libraries.first
         end
@@ -972,14 +994,14 @@ module Alexandria
 
       def select_library(library)
         log.debug { "select library #{library}" }
-        iter = @library_listview.model.iter_first
-        ok = true
+        model = @library_listview.model
+        ok, iter = model.iter_first
         while ok
-          if iter[1] == library.name
+          if model.get_value(iter, 1) == library.name
             @library_listview.selection.select_iter(iter)
             break
           end
-          ok = iter.next!
+          ok = model.iter_next iter
         end
       end
 
@@ -1012,7 +1034,7 @@ module Alexandria
         view = page == 0 ? @iconview : @listview
         selection = page == 0 ? @iconview : @listview.selection
 
-        selection.selected_each do |_the_view, path|
+        selection.selected_foreach(proc do |_the_view, path|
           # don't use the_view which is passed in by this block
           # as it doesn't consider the filtering for some reason
           # see bug #24568
@@ -1033,7 +1055,7 @@ module Alexandria
             # book to a Library displayed in an Iconview
             # TODO find root cause of this
           end
-        end
+        end, nil)
         a
       end
 
@@ -1158,10 +1180,11 @@ module Alexandria
       end
 
       def setup_move_actions
-        @actiongroup.actions.each do |action|
+        @actiongroup.list_actions.each do |action|
           next unless /^MoveIn/.match(action.name)
           @actiongroup.remove_action(action)
         end
+
         actions = []
         @libraries.all_regular_libraries.each do |library|
           actions << [
@@ -1170,7 +1193,13 @@ module Alexandria
             nil, nil, proc { move_selected_books_to_library(library) }
           ]
         end
-        @actiongroup.add_actions(actions)
+        # FIXME: Extract to a method on ActionGroup.
+        actions.each do |name, stock_id, label, accelerator, tooltip, callback|
+          action = Gtk::Action.new(name, label, tooltip, stock_id)
+          @actiongroup.add_action_with_accel(action, accelerator)
+          action.signal_connect('activate', &callback)
+        end
+
         @uimanager.remove_ui(@move_mid) if @move_mid
         @move_mid = @uimanager.new_merge_id
         @libraries.all_regular_libraries.each do |library|
@@ -1178,7 +1207,7 @@ module Alexandria
           ['ui/MainMenubar/EditMenu/Move/',
            'ui/BookPopup/Move/'].each do |path|
             @uimanager.add_ui(@move_mid, path, name, name,
-                              Gtk::UIManager::MENUITEM, false)
+                              :menuitem, false)
           end
         end
       end
@@ -1294,7 +1323,7 @@ module Alexandria
       ]
 
       def setup_books_iconview_sorting
-        sort_order = @prefs.reverse_icons ? Gtk::SORT_DESCENDING : Gtk::SORT_ASCENDING
+        sort_order = @prefs.reverse_icons ? :descending : :ascending
         mode = ICONS_SORTS[@prefs.arrange_icons_mode]
         @iconview_model.set_sort_column_id(mode, sort_order)
         @filtered_model.refilter # force redraw

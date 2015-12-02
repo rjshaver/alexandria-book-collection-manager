@@ -16,6 +16,8 @@
 # write to the Free Software Foundation, Inc., 51 Franklin Street,
 # Fifth Floor, Boston, MA 02110-1301 USA.
 
+Gtk.load_class :Entry
+
 class Gtk::Entry
   def complete_titles
     complete(Alexandria::UI::CompletionModels::TITLE)

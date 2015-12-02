@@ -58,10 +58,10 @@ class IconViewTooltips
   end
 
   def set_view(view)
-    view.signal_connect('motion_notify_event') { |vw, event|
+    view.signal_connect('motion-notify-event') { |vw, event|
       on_motion(vw, event)
     }
-    view.signal_connect('leave_notify_event') { |vw, event|
+    view.signal_connect('leave-notify-event') { |vw, event|
       on_leave(vw, event)
     }
   end

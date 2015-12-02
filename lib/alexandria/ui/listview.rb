@@ -44,7 +44,6 @@ module Alexandria
       include Logging
       include GetText
       include DragAndDropable
-      BOOKS_TARGET_TABLE = [["ALEXANDRIA_BOOKS", :same_app, 0]]
 
       MAX_RATING_STARS = 5
       module Columns
@@ -136,7 +135,8 @@ module Alexandria
 
       def setup_books_listview
         log.debug { 'setup_books_listview' }
-        @listview.model = @listview_model
+        # FIXME: Make #model= work as well
+        @listview.set_model @listview_model
         setup_title_column
         TEXT_COLUMNS.each do |title, iterid|
           setup_text_column title, iterid
@@ -302,7 +302,7 @@ module Alexandria
           @prefs.col_rating_visible,
           @prefs.col_tags_visible
         ]
-        cols = @listview.columns[1..-1] # skip "Title"
+        cols = @listview.columns.to_a[1..-1] # skip "Title"
         cols.each_index do |i|
           cols[i].visible = cols_visibility[i]
         end
@@ -321,7 +321,7 @@ module Alexandria
               log.debug { "#{c.title} : #{cols_width[c.title]}" }
               width = cols_width[c.title]
               next if width == 0
-              c.sizing = Gtk::TreeViewColumn::FIXED
+              c.sizing = :fixed
               c.fixed_width = width
             end
           end

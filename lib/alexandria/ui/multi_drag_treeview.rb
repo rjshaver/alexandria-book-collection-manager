@@ -56,19 +56,41 @@ class Gtk::TreeView
     end
   end
 
+  # FIXME: Don't override this method.
   alias_method :old_enable_model_drag_source, :enable_model_drag_source
   def enable_model_drag_source(start_button_mask, targets, actions)
-    old_enable_model_drag_source(start_button_mask, targets, actions)
+    # FIXME: Extract to gir_ffi-gtk?
+    entries = targets.map do |target, flags, info|
+      Gtk::TargetEntry.new.tap do |entry|
+        entry.target = target
+        entry.flags = Gtk::TargetFlags[flags]
+        entry.info = info
+      end
+    end
+    old_enable_model_drag_source(start_button_mask, entries, actions)
 
     @context = Context.new
     @context.source_start_button_mask = start_button_mask
-    @context.source_targets = Gtk::TargetList.new(targets)
+    @context.source_targets = Gtk::TargetList.new(entries)
     @context.source_actions = actions
 
     @context.button_press_handler =
-      signal_connect('button_press_event') do |_widget, event, _data|
+      signal_connect('button-press-event') do |_widget, event, _data|
         button_press_event(event)
       end
+  end
+
+  # FIXME: Extract to gir_ffi-gtk.
+  alias_method :old_enable_model_drag_dest, :enable_model_drag_dest
+  def enable_model_drag_dest(targets, actions)
+    entries = targets.map do |target, flags, info|
+      Gtk::TargetEntry.new.tap do |entry|
+        entry.target = target
+        entry.flags = Gtk::TargetFlags[flags]
+        entry.info = info
+      end
+    end
+    old_enable_model_drag_dest(entries, actions)
   end
 
   def drag_context

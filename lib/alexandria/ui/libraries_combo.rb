@@ -16,6 +16,9 @@
 # Fifth Floor, Boston, MA 02110-1301 USA.
 
 # Ideally this would be a subclass of GtkComboBox, but...
+
+Gtk.load_class :ComboBox
+
 class Gtk::ComboBox
   include GetText
   extend GetText
