@@ -43,11 +43,18 @@ describe Alexandria::UI::MainApp do
   it 'runs' do
     @main_app = Alexandria::UI::MainApp.instance
 
-    Gtk.timeout_add(100) do
-      @main_app.main_app.destroy
+    exception = nil
+    # FIXME: Function should take a block automatically
+    GLib.timeout_add(GLib::PRIORITY_DEFAULT, 100, proc do
+      begin
+        @main_app.main_app.destroy
+      rescue => e
+        exception = e
+      end
       Gtk.main_quit
-    end
+    end, nil, nil)
 
     Gtk.main
+    raise exception if exception
   end
 end

@@ -118,10 +118,11 @@ module Alexandria
         renderer = Gtk::CellRendererText.new
         renderer.ellipsize = Pango::ELLIPSIZE_END if Pango.ellipsizable?
         column.pack_start(renderer, true)
-        column.set_cell_data_func(renderer, proc do |_col, cell, _model, iter|
+        column.set_cell_data_func(renderer, proc do |_col, cell, model, iter|
           # log.debug { "sidepane: editable #{cell}, #{iter} #{iter[1]}: #{iter[2]}" }
-          cell.text = iter[1]
-          cell.editable = iter[2]
+          # FIXME: Unpack result of model#get_value automatically
+          cell.text = model.get_value(iter, 1).get_value
+          cell.editable = model.get_value(iter, 2).get_value
           # log.debug { "exit sidepane: editable #{cell}, #{iter}" }
         end, nil, nil)
         renderer.signal_connect('edited', &method(:on_edited_library))

@@ -98,7 +98,7 @@ module Alexandria
         action.active = true
       end
 
-      def on_window_destroy(_window)
+      def on_window_destroy(_window, _user_data)
         log.debug { 'destroy' }
         @actiongroup['Quit'].activate
       end

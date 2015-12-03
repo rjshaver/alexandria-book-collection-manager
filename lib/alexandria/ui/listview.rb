@@ -68,7 +68,7 @@ module Alexandria
         log.debug { 'Create listview column for %s' % title }
         column = Gtk::TreeViewColumn.new
         column.set_title title
-        column.widget = Gtk::Label.new(title).show
+        (column.widget = Gtk::Label.new(title)).show
         renderer = Gtk::CellRendererPixbuf.new
         column.pack_start(renderer, false)
 
@@ -163,7 +163,7 @@ module Alexandria
         renderer.ellipsize = Pango::ELLIPSIZE_END if Pango.ellipsizable?
         column = Gtk::TreeViewColumn.new_with_attributes(title, renderer,
                                                          text: Columns::TAGS)
-        column.widget = Gtk::Label.new(title).show
+        (column.widget = Gtk::Label.new(title)).show
         column.sort_column_id = Columns::TAGS
         column.resizable = true
         @listview.append_column(column)
@@ -186,7 +186,7 @@ module Alexandria
         log.debug { 'Create listview column for %s...' % title }
         column = Gtk::TreeViewColumn.new
         column.set_title title
-        column.widget = Gtk::Label.new(title).show
+        (column.widget = Gtk::Label.new(title)).show
         column.sizing = :fixed
         column.fixed_width = column.min_width = column.max_width =
           (Icons::STAR_SET.width + 1) * MAX_RATING_STARS
@@ -246,7 +246,7 @@ module Alexandria
           end
         end
         column = Gtk::TreeViewColumn.new_with_attributes(title, renderer, text: iterid)
-        column.widget = Gtk::Label.new(title).show
+        (column.widget = Gtk::Label.new(title)).show
         column.sort_column_id = iterid
         column.resizable = true
         log.debug { 'Create listview column for %s...' % title }
@@ -280,7 +280,7 @@ module Alexandria
         renderer.ellipsize = Pango::ELLIPSIZE_END if Pango.ellipsizable?
         column = Gtk::TreeViewColumn.new_with_attributes(title, renderer,
                                                          text: iterid)
-        column.widget = Gtk::Label.new(title).show
+        (column.widget = Gtk::Label.new(title)).show
         column.sort_column_id = iterid
         column.resizable = true
         @listview.append_column(column)

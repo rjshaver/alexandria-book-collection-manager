@@ -1144,17 +1144,19 @@ module Alexandria
       def save_preferences
         log.debug { 'save_preferences' }
         @prefs.position = @main_app.position
-        @prefs.size = @main_app.allocation.to_a[2..3]
+        allocation = @main_app.allocation
+        @prefs.size = [allocation.width, allocation.height]
         @prefs.maximized = @maximized
         @prefs.sidepane_position = @paned.position
-        @prefs.sidepane_visible = @actiongroup['Sidepane'].active?
-        @prefs.toolbar_visible = @actiongroup['Toolbar'].active?
-        @prefs.statusbar_visible = @actiongroup['Statusbar'].active?
+        # FIXME: Provide predicate methods for boolean properties.
+        @prefs.sidepane_visible = @actiongroup['Sidepane'].active
+        @prefs.toolbar_visible = @actiongroup['Toolbar'].active
+        @prefs.statusbar_visible = @actiongroup['Statusbar'].active
         @prefs.view_as = @notebook.page
         @prefs.selected_library = selected_library.name
         cols_width = {}
         @listview.columns.each do |c|
-          cols_width[c.title] = [c.widget.size_request.first, c.width].max
+          cols_width[c.title] = [c.widget.get_size_request.first, c.width].max
         end
         @prefs.cols_width = '{' + cols_width.to_a.map do |t, v|
           '"' + t + '": ' + v.to_s
