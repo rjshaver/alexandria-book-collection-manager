@@ -57,6 +57,7 @@ class Gtk::TreeView
   end
 
   # FIXME: Don't override this method.
+  setup_instance_method :enable_model_drag_source
   alias_method :old_enable_model_drag_source, :enable_model_drag_source
   def enable_model_drag_source(start_button_mask, targets, actions)
     # FIXME: Extract to gir_ffi-gtk?
@@ -81,6 +82,7 @@ class Gtk::TreeView
   end
 
   # FIXME: Extract to gir_ffi-gtk.
+  setup_instance_method :enable_model_drag_dest
   alias_method :old_enable_model_drag_dest, :enable_model_drag_dest
   def enable_model_drag_dest(targets, actions)
     entries = targets.map do |target, flags, info|
