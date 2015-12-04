@@ -53,6 +53,7 @@ Gem::Specification.new do |s|
   s.add_development_dependency('minitest', ['~> 5.0'])
   s.add_development_dependency('rake', ['~> 10.0'])
   s.add_development_dependency('rspec', ['~> 3.0'])
+  s.add_development_dependency('atspi_app_driver', ['0.0.3'])
 
   s.require_paths = ['lib']
 end
