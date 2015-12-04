@@ -111,9 +111,10 @@ module Alexandria
         column = Gtk::TreeViewColumn.new
         column.set_title(_('Library'))
         column.pack_start(renderer, false)
-        column.set_cell_data_func(renderer, proc do |_col, cell, _model, iter|
+        column.set_cell_data_func(renderer, proc do |_col, cell, model, iter|
           # log.debug { "sidepane: cell_data_func #{col}, #{cell}, #{iter}" }
-          cell.pixbuf = iter[0]
+          # FIXME: Remove need for second get_value
+          cell.pixbuf = model.get_value(iter, 0).get_value
         end, nil, nil)
         renderer = Gtk::CellRendererText.new
         renderer.ellipsize = Pango::ELLIPSIZE_END if Pango.ellipsizable?
@@ -128,9 +129,10 @@ module Alexandria
         renderer.signal_connect('edited', &method(:on_edited_library))
         @library_listview.append_column(column)
 
-        @library_listview.set_row_separator_func(proc do |_model, iter|
+        @library_listview.set_row_separator_func(proc do |model, iter|
           # log.debug { "library_listview row_separator #{iter}" }
-          iter[3]
+          # FIXME: Remove need for second get_value
+          model.get_value(iter, 3).get_value
         end, nil, nil)
 
         @library_listview.selection.signal_connect('changed') do
