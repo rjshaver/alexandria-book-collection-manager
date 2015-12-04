@@ -79,10 +79,10 @@ module Alexandria
         end
       end
 
-      def on_window_state_event(_window, event)
+      def on_window_state_event(_window, event, _data)
         log.debug { 'window-state-event' }
         if event.is_a?(Gdk::EventWindowState)
-          @maximized = event.new_window_state == Gdk::EventWindowState::MAXIMIZED
+          @maximized = event.new_window_state == :maximized
         end
         log.debug { 'end window-state-event' }
       end
