@@ -19,6 +19,7 @@ require 'atspi_app_driver'
 
 describe 'The Alexandria application' do
   before do
+    ENV['HOME'] = Dir.mktmpdir
     @driver = AtspiAppDriver.new 'alexandria'
     @driver.boot
   end
