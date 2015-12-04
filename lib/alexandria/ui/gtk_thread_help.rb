@@ -1,7 +1,7 @@
 # -*- ruby -*-
 #--
 # Copyright (C) 2010 Cathal Mc Ginley
-# Copyright (C) 2011 Matijs van Zuijlen
+# Copyright (C) 2011, 2015 Matijs van Zuijlen
 #
 # This file is part of Alexandria, a GNOME book collection manager.
 #
@@ -64,7 +64,7 @@ module Gtk
   #     end
 
   def self.main_with_queue(timeout = 100) # millis
-    Gtk.timeout_add(timeout) do
+    GLib.timeout_add(GLib::PRIORITY_DEFAULT, timeout, proc do
       GTK_PENDING_BLOCKS_LOCK.synchronize do
         for block in GTK_PENDING_BLOCKS
           block.call
@@ -72,7 +72,7 @@ module Gtk
         GTK_PENDING_BLOCKS.clear
       end
       true
-    end
+    end, nil, nil)
     Gtk.main
   end
 end
