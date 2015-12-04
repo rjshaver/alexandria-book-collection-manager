@@ -39,22 +39,4 @@ describe Alexandria::UI::MainApp do
       Alexandria::UI::MainApp.new
     end.to raise_error NoMethodError
   end
-
-  it 'runs' do
-    @main_app = Alexandria::UI::MainApp.instance
-
-    exception = nil
-    # FIXME: Function should take a block automatically
-    GLib.timeout_add(GLib::PRIORITY_DEFAULT, 100, proc do
-      begin
-        @main_app.main_app.destroy
-      rescue => e
-        exception = e
-      end
-      Gtk.main_quit
-    end, nil, nil)
-
-    Gtk.main
-    raise exception if exception
-  end
 end
