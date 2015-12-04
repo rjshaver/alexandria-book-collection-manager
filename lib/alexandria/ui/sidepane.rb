@@ -97,12 +97,11 @@ module Alexandria
       end
 
       def setup_sidepane
-        # FIXME: Switch to Gtk+ 3 and use `.new`
         # FIXME: Make #model= work as well.
-        @library_listview.set_model Gtk::ListStore.newv([GdkPixbuf::Pixbuf.gtype,
-                                                         GObject::TYPE_STRING,
-                                                         GObject::TYPE_BOOLEAN,
-                                                         GObject::TYPE_BOOLEAN])
+        @library_listview.set_model Gtk::ListStore.new([GdkPixbuf::Pixbuf.gtype,
+                                                        GObject::TYPE_STRING,
+                                                        GObject::TYPE_BOOLEAN,
+                                                        GObject::TYPE_BOOLEAN])
         @library_separator_iter = nil
         @libraries.all_regular_libraries.each { |x| @parent.append_library(x) }
         @libraries.all_smart_libraries.each { |x| @parent.append_library(x) }

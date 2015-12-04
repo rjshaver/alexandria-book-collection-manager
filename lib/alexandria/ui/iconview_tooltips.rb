@@ -39,8 +39,8 @@ class IconViewTooltips
     @tooltip_window.border_width = 4
     @tooltip_window.app_paintable = true
 
-    @tooltip_window.signal_connect('expose-event') { |window, event|
-      on_expose(window, event)
+    @tooltip_window.signal_connect('draw') { |window, cr|
+      on_expose(window, _cr)
     }
 
     @tooltip_window.signal_connect('leave-notify-event') { |vw, event|
@@ -66,7 +66,7 @@ class IconViewTooltips
     }
   end
 
-  def on_expose(window, _event)
+  def on_expose(window, _cr)
     # this paints a nice outline around the label
     size = window.size_request
     window.style.paint_flat_box(window.window,

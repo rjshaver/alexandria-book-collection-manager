@@ -160,15 +160,12 @@ module Alexandria
         @toolitem = Gtk::ToolItem.new
         @toolitem.expand = true
         @toolitem.border_width = 5
-        @tooltips.set_tip(@filter_entry,
-                          _('Type here the search criterion'), nil)
+        @filter_entry.set_tooltip_text _('Type here the search criterion')
         @toolitem.add @filter_entry
         @toolbar.insert(@toolitem, -1)
       end
 
       def setup_toolbar_combobox
-        @tooltips = Gtk::Tooltips.new
-
         cb = Gtk::ComboBoxText.new
         cb.set_row_separator_func(proc do |model, iter|
           # log.debug { "row_separator" }
@@ -196,7 +193,7 @@ module Alexandria
         @toolitem.border_width = 5
         @toolitem.add eb
         @toolbar.insert(@toolitem, -1)
-        @tooltips.set_tip(eb, _('Change the search type'), nil)
+        eb.set_tooltip_text _('Change the search type')
       end
 
       def setup_toolbar_viewas
@@ -215,7 +212,7 @@ module Alexandria
         @toolitem.border_width = 5
         @toolitem.add eb
         @toolbar.insert(@toolitem, -1)
-        @tooltips.set_tip(eb, _('Choose how to show books'), nil)
+        eb.set_tooltip_text _('Choose how to show books')
       end
 
       def setup_book_providers
@@ -304,7 +301,7 @@ module Alexandria
           GObject::TYPE_STRING,    # LOANED TO
         ]
 
-        @model = Gtk::ListStore.newv(list)
+        @model = Gtk::ListStore.new(list)
 
         # Filter books according to the search toolbar widgets.
         @filtered_model = @model.filter_new(nil)

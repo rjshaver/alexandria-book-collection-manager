@@ -59,14 +59,9 @@ class Gtk::IconView
   alias_method :old_enable_model_drag_source, :enable_model_drag_source
   def enable_model_drag_source(start_button_mask, targets, actions)
     entries = targets.map do |target, flags, info|
-      Gtk::TargetEntry.new.tap do |entry|
-        entry.target = target
-        entry.flags = Gtk::TargetFlags[flags]
-        entry.info = info
-      end
+      Gtk::TargetEntry.new(target, Gtk::TargetFlags[flags], info)
     end
-    arr = GirFFI::SizedArray.from(Gtk::TargetEntry, -1, entries)
-    old_enable_model_drag_source(start_button_mask, arr, entries.count, actions)
+    old_enable_model_drag_source(start_button_mask, entries, actions)
   end
 end
 

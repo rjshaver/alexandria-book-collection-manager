@@ -50,7 +50,7 @@ module Alexandria
         @iconview.selection_mode = :multiple
         @iconview.text_column = Columns::TITLE_REDUCED
         @iconview.pixbuf_column = Columns::COVER_ICON
-        @iconview.orientation = :vertical
+        @iconview.item_orientation = :vertical
         @iconview.row_spacing = 4
         @iconview.column_spacing = 16
         @iconview.item_width = ICON_WIDTH + 16

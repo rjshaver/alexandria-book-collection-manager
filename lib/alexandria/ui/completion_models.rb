@@ -119,9 +119,8 @@ module Alexandria
       def initialize
         @models = []
         @libraries = []
-        # FIXME: Hide new if not defined, magically rename newv to new.
-        5.times { @models << Gtk::ListStore.newv([GObject::TYPE_STRING]) }
-        @models << Gtk::ListStore.newv([GObject::TYPE_STRING])
+        5.times { @models << Gtk::ListStore.new([GObject::TYPE_STRING]) }
+        @models << Gtk::ListStore.new([GObject::TYPE_STRING])
         touch
       end
 
