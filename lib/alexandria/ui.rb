@@ -16,7 +16,7 @@
 # write to the Free Software Foundation, Inc., 51 Franklin Street,
 # Fifth Floor, Boston, MA 02110-1301 USA.
 
-require 'gir_ffi-gtk2'
+require 'gir_ffi-gtk3'
 Gtk.init
 
 GirFFI.setup 'GdkPixbuf', '2.0'
