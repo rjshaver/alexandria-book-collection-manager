@@ -508,7 +508,7 @@ module Alexandria
 
           log.debug { "Currently focused widget: #{@main_app.focus.inspect}" }
           log.debug { "#{@library_listview} : #{@library_popup} : #{@listview}" }
-          log.debug { "@library_listview: #{@library_listview.has_focus?} or @library_popup:#{@library_popup.has_focus?}" } # or selection: #{selection}"}
+          log.debug { "@library_listview: #{@library_listview.has_focus} or @library_popup:#{@library_popup.has_focus}" } # or selection: #{selection}"}
           log.debug { '@library_listview does *NOT* have focus' }
           log.debug { "Books are empty: #{books.empty?}" }
           @actiongroup['Properties'].sensitive = \
@@ -522,7 +522,7 @@ module Alexandria
               @actiongroup['Move'].sensitive =
                 @actiongroup['SetRating'].sensitive = !books.empty?
 
-          log.debug { "on_books_selection_changed Delete: #{@actiongroup['Delete'].sensitive?}" }
+          log.debug { "on_books_selection_changed Delete: #{@actiongroup['Delete'].sensitive}" }
 
           if library.is_a?(SmartLibrary)
             @actiongroup['Delete'].sensitive =
