@@ -23,13 +23,15 @@
 
 # require 'goocanvas'
 
+GirFFI.setup :GooCanvas
+
 module Alexandria
   module UI
     class BarcodeAnimation
       attr_reader :canvas
 
       def initialize
-        @canvas = Goo::Canvas.new
+        @canvas = GooCanvas::Canvas.new
         @canvas.set_size_request(300, 70)
         @canvas.set_bounds(0, 0, 350, 70)
         @root = @canvas.root_item
@@ -67,15 +69,15 @@ module Alexandria
       end
 
       def set_active
-        @canvas.set_property(:background_color, 'white')
-        @barcode_bars.each { |rect| rect.set_property(:fill_color, 'white') }
+        @canvas.background_color = 'white'
+        @barcode_bars.each { |rect| rect.fill_color = 'white' }
       end
 
       def set_passive
         if @canvas
           passive_bg = '#F4F4F4'
-          @canvas.set_property(:background_color, passive_bg)
-          @barcode_bars.each { |rect| rect.set_property(:fill_color, passive_bg) }
+          @canvas.background_color = passive_bg
+          @barcode_bars.each { |rect| rect.fill_color = passive_bg }
         end
       end
 
@@ -105,11 +107,24 @@ module Alexandria
       def draw_barcode_bars
         @barcode_data.each do |space_width, bar_width|
           @hpos += space_width
-          rect_item = Goo::CanvasRect.new(@root,
-                                          @bar_left_edge + @scale * @hpos, @bar_top,
-                                          @scale * bar_width, @bar_height,
-                                          line_width: 0,
-                                          fill_color: 'white')
+          # FIXME: Add override for CanvasRect.new and Object.new
+          # FIXME: Should set parent to @root.
+
+          params = {
+            x: @bar_left_edge + @scale * @hpos,
+            y: @bar_top,
+            width: @scale * bar_width,
+            height: @bar_height,
+            line_width: 0,
+            fill_color: 'white'
+          }
+          gparams = params.map do |name, value|
+            GObject::Parameter.new.tap do |gparam|
+              gparam.name = name.to_s
+              gparam.value = value
+            end
+          end
+          rect_item = GooCanvas::CanvasRect.new(gparams)
           @hpos += bar_width
           @barcode_bars << rect_item
         end

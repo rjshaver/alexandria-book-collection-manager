@@ -23,7 +23,7 @@ require 'alexandria/scanners/keyboard'
 
 require 'alexandria/ui/sound'
 # FIXME: Commented out until GooCanvas gets introspection data.
-#require 'alexandria/ui/dialogs/barcode_animation'
+require 'alexandria/ui/dialogs/barcode_animation'
 
 module Alexandria
   module UI
@@ -443,7 +443,7 @@ module Alexandria
         @scanner_buffer = ''
         scanner_name = @prefs.barcode_scanner
 
-        @acanner = Alexandria::Scanners.find_scanner scanner_name ||
+        @scanner = Alexandria::Scanners.find_scanner scanner_name ||
           Alexandria::Scanners.default_scanner # CueCat is default
 
         log.debug { "Using #{@scanner.name} scanner" }
@@ -590,9 +590,11 @@ module Alexandria
       end
 
       def init_treeview
-        liststore = Gtk::ListStore.new(String, Gdk::Pixbuf, String)
+        liststore = Gtk::ListStore.new([GObject::TYPE_STRING,
+                                        GdkPixbuf::Pixbuf.gtype,
+                                        GObject::TYPE_STRING])
 
-        @barcodes_treeview.selection.mode = Gtk::SELECTION_MULTIPLE
+        @barcodes_treeview.selection.mode = :multiple
 
         @barcodes_treeview.model = liststore
 
@@ -600,14 +602,14 @@ module Alexandria
         text_renderer.editable = false
 
         # Add column using our renderer
-        col = Gtk::TreeViewColumn.new('ISBN', text_renderer, text: 0)
+        col = Gtk::TreeViewColumn.new_with_attributes('ISBN', text_renderer, text: 0)
         @barcodes_treeview.append_column(col)
 
         # Middle colulmn is cover-image renderer
         pixbuf_renderer = Gtk::CellRendererPixbuf.new
-        col = Gtk::TreeViewColumn.new('Cover', pixbuf_renderer)
+        col = Gtk::TreeViewColumn.new_with_attributes('Cover', pixbuf_renderer)
 
-        col.set_cell_data_func(pixbuf_renderer) do |_column, cell, _model, iter|
+        col.set_cell_data_func(pixbuf_renderer, proc do |_column, cell, _model, iter|
           pixbuf = iter[1]
           if pixbuf
             max_height = 25
@@ -619,12 +621,12 @@ module Alexandria
 
             cell.pixbuf = pixbuf
           end
-        end
+        end, nil, nil)
 
         @barcodes_treeview.append_column(col)
 
         # Add column using the second renderer
-        col = Gtk::TreeViewColumn.new('Title', text_renderer, text: 2)
+        col = Gtk::TreeViewColumn.new_with_attributes('Title', text_renderer, text: 2)
         @barcodes_treeview.append_column(col)
 
         @barcodes_treeview.model.signal_connect('row-deleted') do |model, _path|

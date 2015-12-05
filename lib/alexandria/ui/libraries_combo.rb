@@ -31,27 +31,30 @@ class Gtk::ComboBox
       libraries_names.unshift selected_library.name
     end
     clear
-    set_row_separator_func do |_model, iter|
-      iter[1] == '-'
-    end
-    self.model = Gtk::ListStore.new(Gdk::Pixbuf, String, TrueClass)
+    set_row_separator_func(proc do |model, iter|
+      model.get_value(iter, 1).get_value == '-'
+    end, nil, nil)
+    self.model = Gtk::ListStore.new([GdkPixbuf::Pixbuf.gtype,
+                                     GObject::TYPE_STRING,
+                                     GObject::TYPE_BOOLEAN])
     libraries_names.each do |library_name|
       iter = model.append
-      iter[0] = Alexandria::UI::Icons::LIBRARY_SMALL
-      iter[1] = library_name
-      iter[2] = false
+      model.set_value(iter, 0, Alexandria::UI::Icons::LIBRARY_SMALL)
+      model.set_value(iter, 1, library_name)
+      model.set_value(iter, 2, false)
     end
-    model.append[1] = '-'
     iter = model.append
-    iter[0] = Alexandria::UI::Icons::LIBRARY_SMALL
-    iter[1] = _('New Library')
-    iter[2] = true
+    model.set_value(iter, 1, '-')
+    iter = model.append
+    model.set_value(iter, 0, Alexandria::UI::Icons::LIBRARY_SMALL)
+    model.set_value(iter, 1, _('New Library'))
+    model.set_value(iter, 2, true)
     renderer = Gtk::CellRendererPixbuf.new
     pack_start(renderer, false)
-    set_attributes(renderer, pixbuf: 0)
+    add_attribute(renderer, 'pixbuf', 0)
     renderer = Gtk::CellRendererText.new
     pack_start(renderer, true)
-    set_attributes(renderer, text: 1)
+    add_attribute(renderer, 'text', 1)
     self.active = 0
     # self.sensitive = libraries.length > 1
     # This prohibits us from adding a "New Library" from this combo
