@@ -982,7 +982,7 @@ module Alexandria
         log.debug { 'selected_library' }
         result, model, iter = @library_listview.selection.selected
         if result
-          wanted_name = model.get_value(iter, 1)
+          wanted_name = model.get_value(iter, 1).get_value
           @libraries.all_libraries.find { |x| x.name == wanted_name }
         else
           @libraries.all_libraries.first
