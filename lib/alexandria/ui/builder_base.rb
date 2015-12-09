@@ -24,11 +24,14 @@ module Alexandria
         builder = Gtk::Builder.new
         builder.add_from_file(file)
         # FIXME: Add override defining connect_signals.
-        # FIXME: Add back exception handler
-        builder.connect_signals_full Proc.new { |b,o,sn,hn,co,f,ud|
-          sn.gsub! /_/, '-'
-          GObject.signal_connect o, sn, &self.method(hn)
-        }, nil
+        builder.connect_signals_full(proc do |_builder, object, signal_name, handler_name, connect_object, flags, _user_data|
+          begin
+            signal_name.gsub! /_/, '-'
+            GObject.signal_connect object, signal_name, &self.method(handler_name)
+          rescue => ex
+            puts "Error: #{ex}" if $DEBUG
+          end
+        end, nil)
 
         widget_names.each do |name|
           instance_variable_set("@#{name}".intern, builder.get_object(name.to_s))
