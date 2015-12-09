@@ -46,7 +46,7 @@ Gem::Specification.new do |s|
   s.add_runtime_dependency('gettext', ['~> 3.1'])
   s.add_runtime_dependency('hpricot', ['~> 0.8.5'])
   s.add_runtime_dependency('htmlentities', ['~> 4.3'])
-  s.add_runtime_dependency('gir_ffi', ['~> 0.8.5'])
+  s.add_runtime_dependency('gir_ffi', ['~> 0.8.6'])
   s.add_runtime_dependency('gir_ffi-gtk', ['~> 0.8.1'])
   s.add_runtime_dependency('gir_ffi-gst', ['0.0.2'])
 
