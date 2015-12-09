@@ -158,7 +158,7 @@ module Alexandria
         @filter_entry = Gtk::Entry.new
         @filter_entry.signal_connect('changed', &method(:on_toolbar_filter_entry_changed))
         @toolitem = Gtk::ToolItem.new
-        @toolitem.expand = true
+        @toolitem.hexpand = true
         @toolitem.border_width = 5
         @filter_entry.set_tooltip_text _('Type here the search criterion')
         @toolitem.add @filter_entry
