@@ -1,6 +1,6 @@
 # Copyright (C) 2004-2006 Laurent Sansonetti
 # Copyright (C) 2008 Joseph Method
-# Copyright (C) 2011 Matijs van Zuijlen
+# Copyright (C) 2011, 2015 Matijs van Zuijlen
 #
 # Alexandria is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License as
@@ -336,7 +336,7 @@ module Alexandria
         log.debug { 'done setting up active model' }
       end
 
-      def on_library_button_press_event(widget, event)
+      def on_library_button_press_event(widget, event, _user_data)
         log.debug { 'library_button_press_event' }
 
         # right click
@@ -406,14 +406,13 @@ module Alexandria
 
         else
           # not a right click
-          if (path = widget.get_path_at_pos(event.x, event.y))
+          found, *path = widget.get_path_at_pos(event.x, event.y)
+          if found
             @clicking_on_sidepane = true
             obj, path = widget.is_a?(Gtk::TreeView) ? [widget.selection, path.first] : [widget, path]
             obj.select_path(path)
             sensitize_library selected_library
-
           end
-
         end
       end
 
@@ -423,7 +422,7 @@ module Alexandria
       end
 
       def event_is_right_click(event)
-        event.event_type == Gdk::Event::BUTTON_PRESS and event.button == 3
+        event.type == :button_press and event.button == 3
       end
 
       def on_books_button_press_event(widget, event)
@@ -555,7 +554,7 @@ module Alexandria
         on_books_selection_changed
       end
 
-      def on_focus(widget, _event_focus)
+      def on_focus(widget, _event_focus, _user_data)
         if @clicking_on_sidepane or widget == @library_listview
           log.debug { 'on_focus: @library_listview' }
           Gtk.idle_add do
