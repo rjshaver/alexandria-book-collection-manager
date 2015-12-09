@@ -1,6 +1,7 @@
 # -*- ruby -*-
 #--
 # Copyright (C) 2011 Cathal Mc Ginley
+# Copyright (C) 2015 Matijs van Zuijlen
 #
 # This file is part of Alexandria, a GNOME book collection manager.
 #
@@ -21,6 +22,7 @@
 #++
 
 require 'gir_ffi-gst'
+Gst.init []
 
 module Alexandria
   module UI
@@ -28,7 +30,7 @@ module Alexandria
     class SoundEffectsPlayer
       def initialize
         @sounds_dir = Alexandria::Config::SOUNDS_DIR
-        @ogg_vorbis_pipeline = Gst::Pipeline.new
+        @ogg_vorbis_pipeline = Gst::Pipeline.new 'pipeline'
         set_up_pipeline
         @playing = false
         set_up_glib_loop
@@ -43,15 +45,15 @@ module Alexandria
       end
 
       def set_up_pipeline
-        @filesrc = Gst::ElementFactory.make('filesrc')
-        demuxer = Gst::ElementFactory.make('oggdemux')
-        decoder = Gst::ElementFactory.make('vorbisdec')
-        converter = Gst::ElementFactory.make('audioconvert') # #??
-        audiosink = Gst::ElementFactory.make('autoaudiosink')
+        @filesrc = Gst::ElementFactory.make('filesrc', 'file source')
+        demuxer = Gst::ElementFactory.make('oggdemux', 'demuxer')
+        decoder = Gst::ElementFactory.make('vorbisdec', 'decoder')
+        converter = Gst::ElementFactory.make('audioconvert', 'converter') # #??
+        audiosink = Gst::ElementFactory.make('autoaudiosink', 'audiosink')
 
-        @ogg_vorbis_pipeline.add(@filesrc, demuxer, decoder,
-                                 converter, audiosink)
-        @filesrc >> demuxer
+        @ogg_vorbis_pipeline.add_many([@filesrc, demuxer, decoder,
+                                       converter, audiosink])
+        @filesrc.link demuxer
 
         # this next must be a dynamic link, as demuxers potentially
         # have multiple src pads (for audio/video muxed streams)
@@ -61,7 +63,7 @@ module Alexandria
           ogg_src_pad.link(vorbis_sink_pad)
         end
 
-        decoder >> converter >> audiosink
+        decoder.link_many([converter, audiosink])
       end
 
       def set_up_glib_loop
@@ -69,7 +71,7 @@ module Alexandria
           @loop = GLib::MainLoop.new(nil, false)
 
           @bus = @ogg_vorbis_pipeline.bus
-          @bus.add_watch do |_bus, message|
+          @bus.add_watch(GLib::PRIORITY_DEFAULT, proc do |_bus, message|
             case message.type
             when Gst::Message::EOS
               @playing = false
@@ -83,7 +85,7 @@ module Alexandria
               @loop.quit
             end
             true
-          end
+          end, nil, nil)
         end
       end
 
