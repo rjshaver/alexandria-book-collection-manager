@@ -826,7 +826,7 @@ module Alexandria
       def cache_scaled_icon(icon, width, height)
         log.debug { "cache_scaled_icon #{icon}, #{width}, #{height}" }
         @cache ||= {}
-        @cache[[icon, width, height]] ||= icon.scale(width, height)
+        @cache[[icon, width, height]] ||= icon.scale_simple(width, height, :bilinear)
       end
 
       ICON_TITLE_MAXLEN = 20   # characters
@@ -869,7 +869,7 @@ module Alexandria
         if rating == MAX_RATING_STARS
           icon = icon.tag(Icons::FAVORITE_TAG)
         end
-        iter[Columns::COVER_ICON] = icon
+        @model.set_value(iter, Columns::COVER_ICON, icon)
         log.debug { 'Full iter: ' + (0..15).map { |num| iter[num].inspect }.join(', ') }
       end
 

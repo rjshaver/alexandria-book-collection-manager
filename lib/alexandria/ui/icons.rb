@@ -27,14 +27,14 @@ class GdkPixbuf::Pixbuf
     tweak_y = tag_pixbuf.height / 3
 
     # Creates the destination pixbuf.
-    new_pixbuf = GdkPixbuf::Pixbuf.new(GdkPixbuf::Pixbuf::COLORSPACE_RGB,
-                                 true,
-                                 8,
-                                 width + tweak_x,
-                                 height + tweak_y)
+    new_pixbuf = GdkPixbuf::Pixbuf.new(:rgb,
+                                       true,
+                                       8,
+                                       width + tweak_x,
+                                       height + tweak_y)
 
     # Fills with blank.
-    new_pixbuf.fill!(0)
+    new_pixbuf.fill(0)
 
     # Copies the current pixbuf there (south-west).
     copy_area(0, 0,
@@ -44,13 +44,13 @@ class GdkPixbuf::Pixbuf
 
     # Copies the tag pixbuf there (north-est).
     tag_pixbuf_x = width - (tweak_x * 2)
-    new_pixbuf.composite!(tag_pixbuf,
-                          0, 0,
-                          tag_pixbuf.width + tag_pixbuf_x,
-                          tag_pixbuf.height,
-                          tag_pixbuf_x, 0,
-                          1, 1,
-                          GdkPixbuf::Pixbuf::INTERP_HYPER, 255)
+    new_pixbuf.composite(tag_pixbuf,
+                         0, 0,
+                         tag_pixbuf.width + tag_pixbuf_x,
+                         tag_pixbuf.height,
+                         tag_pixbuf_x, 0,
+                         1, 1,
+                         :hyper, 255)
     new_pixbuf
   end
 end
