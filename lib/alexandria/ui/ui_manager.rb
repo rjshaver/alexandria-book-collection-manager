@@ -870,7 +870,7 @@ module Alexandria
           icon = icon.tag(Icons::FAVORITE_TAG)
         end
         @model.set_value(iter, Columns::COVER_ICON, icon)
-        log.debug { 'Full iter: ' + (0..15).map { |num| iter[num].inspect }.join(', ') }
+        log.debug { 'Full iter: ' + (0..15).map { |num| @model.get_value(iter, num).get_value.inspect }.join(', ') }
       end
 
       def append_book(book, _tail = nil)
@@ -1097,7 +1097,7 @@ module Alexandria
           @actiongroup['Properties'].sensitive = smart
           can_delete = smart || (@libraries.all_regular_libraries.length > 1)
           @actiongroup['Delete'].sensitive = can_delete ## true #(@libraries.all_regular_libraries.length > 1)
-          log.debug { "sensitize_library delete: #{@actiongroup['Delete'].sensitive?}" }
+          log.debug { "sensitize_library delete: #{@actiongroup['Delete'].sensitive}" }
           false
         end
       end
