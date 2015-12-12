@@ -835,31 +835,31 @@ module Alexandria
 
       def fill_iter_with_book(iter, book)
         log.debug { "fill iter #{iter} with book #{book}" }
-        iter[Columns::IDENT] = book.ident.to_s
-        iter[Columns::TITLE] = book.title
+        @model.set_value(iter, Columns::IDENT, book.ident.to_s)
+        @model.set_value(iter, Columns::TITLE, book.title)
         title = book.title.sub(REDUCE_TITLE_REGEX, '\1...')
-        iter[Columns::TITLE_REDUCED] = title
-        iter[Columns::AUTHORS] = book.authors.join(', ')
-        iter[Columns::ISBN] = book.isbn.to_s
-        iter[Columns::PUBLISHER] = book.publisher
-        iter[Columns::PUBLISH_DATE] = book.publishing_year.to_s
-        iter[Columns::EDITION] = book.edition
-        iter[Columns::NOTES] = (book.notes or '')
-        iter[Columns::LOANED_TO] = (book.loaned_to or '')
+        @model.set_value(iter, Columns::TITLE_REDUCED, title)
+        @model.set_value(iter, Columns::AUTHORS, book.authors.join(', '))
+        @model.set_value(iter, Columns::ISBN, book.isbn.to_s)
+        @model.set_value(iter, Columns::PUBLISHER, book.publisher)
+        @model.set_value(iter, Columns::PUBLISH_DATE, book.publishing_year.to_s)
+        @model.set_value(iter, Columns::EDITION, book.edition)
+        @model.set_value(iter, Columns::NOTES, (book.notes or ''))
+        @model.set_value(iter, Columns::LOANED_TO, (book.loaned_to or ''))
         rating = (book.rating or Book::DEFAULT_RATING)
-        iter[Columns::RATING] = MAX_RATING_STARS - rating # ascending order is the default
-        iter[Columns::OWN] = book.own?
-        iter[Columns::REDD] = book.redd?
-        iter[Columns::WANT] = book.want?
+        @model.set_value(iter, Columns::RATING, MAX_RATING_STARS - rating) # ascending order is the default
+        @model.set_value(iter, Columns::OWN, book.own?)
+        @model.set_value(iter, Columns::REDD, book.redd?)
+        @model.set_value(iter, Columns::WANT, book.want?)
         if book.tags
-          iter[Columns::TAGS] = book.tags.join(',')
+          @model.set_value(iter, Columns::TAGS, book.tags.join(','))
         else
-          iter[Columns::TAGS] = ''
+          @model.set_value(iter, Columns::TAGS, '')
         end
 
         icon = Icons.cover(selected_library, book)
         log.debug { "Setting icon #{icon} for book #{book.title}" }
-        iter[Columns::COVER_LIST] = cache_scaled_icon(icon, 20, 25)
+        @model.set_value(iter, Columns::COVER_LIST, cache_scaled_icon(icon, 20, 25))
 
         if icon.height > ICON_HEIGHT
           new_width = icon.width / (icon.height / ICON_HEIGHT.to_f)

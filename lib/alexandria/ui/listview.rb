@@ -76,7 +76,7 @@ module Alexandria
         column.set_cell_data_func(renderer, proc do |_col, cell, _model, iter|
           iter = @listview_model.convert_iter_to_child_iter(iter)
           iter = @filtered_model.convert_iter_to_child_iter(iter)
-          cell.pixbuf = iter[Columns::COVER_LIST]
+          cell.pixbuf = @model.get_value(iter, Columns::COVER_LIST).get_value
         end, nil, nil)
         renderer = Gtk::CellRendererText.new
         renderer.ellipsize = Pango::ELLIPSIZE_END if Pango.ellipsizable?
@@ -88,7 +88,7 @@ module Alexandria
         column.set_cell_data_func(renderer, proc do |_col, cell, _model, iter|
           iter = @listview_model.convert_iter_to_child_iter(iter)
           iter = @filtered_model.convert_iter_to_child_iter(iter)
-          cell.text = iter[Columns::TITLE]
+          cell.text = @model.get_value(iter, Columns::TITLE).get_value
           cell.editable = false # true
         end, nil, nil)
 
@@ -196,7 +196,7 @@ module Alexandria
           column.set_cell_data_func(renderer, proc do |_col, cell, _model, iter|
             iter = @listview_model.convert_iter_to_child_iter(iter)
             iter = @filtered_model.convert_iter_to_child_iter(iter)
-            rating = (iter[Columns::RATING] - MAX_RATING_STARS).abs
+            rating = (@model.get_value(iter, Columns::RATING).get_value - MAX_RATING_STARS).abs
             cell.pixbuf = rating >= i.succ ?
               Icons::STAR_SET : Icons::STAR_UNSET
           end, nil, nil)
@@ -250,8 +250,8 @@ module Alexandria
         column.sort_column_id = iterid
         column.resizable = true
         log.debug { 'Create listview column for %s...' % title }
-        setup_column = proc do |iter, cell, col|
-          state = iter[col]
+        setup_column = proc do |model, iter, cell, col|
+          state = model.get_value(iter, col).get_value
           cell.set_active(state)
           cell.activatable = true
         end
@@ -261,12 +261,12 @@ module Alexandria
           iter = @filtered_model.convert_iter_to_child_iter(iter)
           case iterid
           when 12
-            setup_column.call(iter, cell, Columns::REDD)
+            setup_column.call(@model, iter, cell, Columns::REDD)
           when 13
-            setup_column.call(iter, cell, Columns::OWN)
+            setup_column.call(@model, iter, cell, Columns::OWN)
           when 14
-            setup_column.call(iter, cell, Columns::WANT)
-            own_state = iter[Columns::OWN]
+            setup_column.call(@model, iter, cell, Columns::WANT)
+            own_state = @model.get_value(iter, Columns::OWN).get_value
             cell.inconsistent = own_state
           end
         end, nil, nil)
