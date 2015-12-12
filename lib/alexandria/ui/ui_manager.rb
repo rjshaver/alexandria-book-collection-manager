@@ -439,7 +439,7 @@ module Alexandria
         event.type == :button_press and event.button == 3
       end
 
-      def on_books_button_press_event(widget, event)
+      def on_books_button_press_event(widget, event, _user_data)
         log.debug { 'books_button_press_event' }
         if event_is_right_click event
           widget.grab_focus
