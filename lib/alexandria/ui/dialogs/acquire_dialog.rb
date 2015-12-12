@@ -22,7 +22,6 @@ require 'alexandria/scanners/cuecat'
 require 'alexandria/scanners/keyboard'
 
 require 'alexandria/ui/sound'
-# FIXME: Commented out until GooCanvas gets introspection data.
 require 'alexandria/ui/dialogs/barcode_animation'
 
 module Alexandria
