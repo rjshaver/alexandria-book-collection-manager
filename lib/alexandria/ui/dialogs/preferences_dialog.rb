@@ -1,5 +1,5 @@
 # Copyright (C) 2004-2006 Laurent Sansonetti
-# Copyright (C) 2011 Matijs van Zuijlen
+# Copyright (C) 2011, 2015 Matijs van Zuijlen
 #
 # Alexandria is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License as
@@ -373,7 +373,7 @@ module Alexandria
                 already_enabled = sel[2]
                 message = already_enabled ? _('Disable Provider') : _('Enable Provider')
                 @enable_item.label = message
-                Gtk.idle_add do
+                GLib.idle_add do
                   @enable_disable_providers_menu.popup(nil, nil, event.button, event.time)
                   false
                 end
@@ -389,7 +389,7 @@ module Alexandria
           selected_prov = @treeview_providers.selection.selected
           puts selected_prov.inspect
           if selected_prov
-            Gtk.idle_add do
+            GLib.idle_add do
               already_enabled = selected_prov[2]
               message = already_enabled ? _('Disable Provider') : _('Enable Provider')
               @enable_item.label = message

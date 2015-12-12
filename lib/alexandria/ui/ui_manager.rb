@@ -31,6 +31,20 @@ module Gtk
   end
 end
 
+module GLib
+  setup_method :idle_add
+
+  # FIXME: Move to gir_ffi
+  def self.idle_add_with_override(priority=GLib::PRIORITY_DEFAULT_IDLE, &block)
+    idle_add_without_override priority, block, nil, nil
+  end
+
+  class << self
+    alias_method :idle_add_without_override, :idle_add
+    alias_method :idle_add, :idle_add_with_override
+  end
+end
+
 module Alexandria
   module UI
     MAX_RATING_STARS = 5
@@ -357,7 +371,7 @@ module Alexandria
               sensitize_library selected_library
 
               if widget.is_a?(Gtk::TreeView)
-                Gtk.idle_add do
+                GLib.idle_add do
                   # cur_path, focus_col = widget.cursor
 
                   widget.focus = true
@@ -390,13 +404,13 @@ module Alexandria
           if library_already_selected
             sensitize_library selected_library
 
-            Gtk.idle_add do
+            GLib.idle_add do
               menu.popup(nil, nil, event.button, event.time)
               # @clicking_on_sidepane = false
               false
             end
           else
-            Gtk.idle_add do
+            GLib.idle_add do
               menu.popup(nil, nil, event.button, event.time)
               # @clicking_on_sidepane = false
 
@@ -557,7 +571,7 @@ module Alexandria
       def on_focus(widget, _event_focus, _user_data)
         if @clicking_on_sidepane or widget == @library_listview
           log.debug { 'on_focus: @library_listview' }
-          Gtk.idle_add do
+          GLib.idle_add do
             %w(OnlineInformation SelectAll DeselectAll).each do |action|
               @actiongroup[action].sensitive = false
             end
@@ -749,7 +763,7 @@ module Alexandria
             prog_percentage = 0
 
             @libraries.ruined_books.reverse!
-            Gtk.idle_add do
+            GLib.idle_add do
               ruined_book = @libraries.ruined_books.pop
               if ruined_book
                 book, isbn, library = ruined_book
@@ -938,7 +952,7 @@ module Alexandria
         log.debug { "library #{library.name} length #{library.length}" }
         n = 0
 
-        Gtk.idle_add do
+        GLib.idle_add do
           block_return = true
           book = library[n]
           if book
@@ -1082,7 +1096,7 @@ module Alexandria
       def sensitize_library(library)
         smart = library.is_a?(SmartLibrary)
         log.debug { "sensitize_library: smartlibrary = #{smart}" }
-        Gtk.idle_add do
+        GLib.idle_add do
           @actiongroup['AddBook'].sensitive = !smart
           @actiongroup['AddBookManual'].sensitive = !smart
           @actiongroup['Properties'].sensitive = smart

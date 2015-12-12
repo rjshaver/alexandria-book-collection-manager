@@ -1,6 +1,6 @@
 # Copyright (C) 2004-2006 Laurent Sansonetti
 # Copyright (C) 2007 Cathal Mc Ginley
-# Copyright (C) 2011 Matijs van Zuijlen
+# Copyright (C) 2011, 2015 Matijs van Zuijlen
 #
 # Alexandria is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License as
@@ -294,7 +294,7 @@ module Alexandria
       # begin copy-n-paste from new_book_dialog
 
       def notify_start_add_by_isbn
-        Gtk.idle_add do
+        GLib.idle_add do
           main_progress_bar = MainApp.instance.appbar.children.first
           main_progress_bar.visible = true
           @progress_pulsing = Gtk.timeout_add(100) do
@@ -310,7 +310,7 @@ module Alexandria
       end
 
       def notify_end_add_by_isbn
-        Gtk.idle_add do
+        GLib.idle_add do
           MainApp.instance.appbar.children.first.visible = false
           Gtk.timeout_remove(@progress_pulsing) if @progress_pulsing
           false
@@ -318,7 +318,7 @@ module Alexandria
       end
 
       def update(status, provider)
-        Gtk.idle_add do
+        GLib.idle_add do
           messages = {
             searching: _("Searching Provider '%s'..."),
             error: _("Error while Searching Provider '%s'"),
@@ -515,7 +515,7 @@ module Alexandria
 
               Thread.new(@interval, @scanner_buffer) do |interval, buffer|
                 log.debug { 'Waiting for more scanner input...' }
-                Gtk.idle_add do
+                GLib.idle_add do
                   @animation.manual_input
                   false
                 end
@@ -523,7 +523,7 @@ module Alexandria
                 sleep(time_to_wait)
                 if buffer == @scanner_buffer
                   log.debug { 'Buffer unchanged; scanning complete' }
-                  Gtk.idle_add do
+                  GLib.idle_add do
                     @animation.scanner_input
                     false
                   end
@@ -556,14 +556,14 @@ module Alexandria
         if effect == 'scanning'
           puts effect
           return unless  @prefs.play_scanning_sound
-          Gtk.idle_add do
+          GLib.idle_add do
             @sound_players['scanning'].play('scanning')
             false
           end
         else
           puts effect
           return unless @prefs.play_scan_sound
-          Gtk.idle_add do
+          GLib.idle_add do
             # sleep(0.5) # "scanning" effect lasts 0.5 seconds, wait for it to end
             @sound_players[effect].play(effect)
             false
