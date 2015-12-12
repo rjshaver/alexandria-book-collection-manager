@@ -957,12 +957,7 @@ module Alexandria
           book = library[n]
           if book
             Gtk.queue do
-              begin
-                append_book(book)
-              rescue => ex
-                trace = ex.backtrace.join("\n > ")
-                log.error { "append_books failed #{ex.message} #{trace}" }
-              end
+              append_book(book)
               # convert to percents
               coeff = total / 100.0
               percent = n / coeff
