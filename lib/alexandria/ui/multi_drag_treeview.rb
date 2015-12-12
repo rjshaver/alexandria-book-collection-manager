@@ -1,5 +1,5 @@
 # Copyright (C) 2004-2006 Laurent Sansonetti
-# Copyright (C) 2011 Matijs van Zuijlen
+# Copyright (C) 2011, 2015 Matijs van Zuijlen
 #
 # Alexandria is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License as
@@ -66,15 +66,18 @@ class Gtk::TreeView
     end
     old_enable_model_drag_source(start_button_mask, entries, actions)
 
-    @context = Context.new
-    @context.source_start_button_mask = start_button_mask
-    @context.source_targets = Gtk::TargetList.new(entries)
-    @context.source_actions = actions
+    # FIXME: Re-enable or re-implement
+    if false
+      @context = Context.new
+      @context.source_start_button_mask = start_button_mask
+      @context.source_targets = Gtk::TargetList.new(entries)
+      @context.source_actions = actions
 
-    @context.button_press_handler =
-      signal_connect('button-press-event') do |_widget, event, _data|
-        button_press_event(event)
-      end
+      @context.button_press_handler =
+        signal_connect('button-press-event') do |_widget, event, _data|
+          button_press_event(event)
+        end
+    end
   end
 
   # FIXME: Extract to gir_ffi-gtk.
