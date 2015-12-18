@@ -23,15 +23,13 @@ module Alexandria
         file = File.join(Alexandria::Config::DATA_DIR, 'glade', filename)
         builder = Gtk::Builder.new
         builder.add_from_file(file)
-        # FIXME: Add override defining connect_signals.
-        builder.connect_signals_full(proc do |_builder, object, signal_name, handler_name, connect_object, flags, _user_data|
+        builder.connect_signals do |handler_name|
           begin
-            signal_name.gsub! /_/, '-'
-            GObject.signal_connect object, signal_name, &self.method(handler_name)
+            method(handler_name)
           rescue => ex
             puts "Error: #{ex}" if $DEBUG
           end
-        end, nil)
+        end
 
         widget_names.each do |name|
           instance_variable_set("@#{name}".intern, builder.get_object(name.to_s))
