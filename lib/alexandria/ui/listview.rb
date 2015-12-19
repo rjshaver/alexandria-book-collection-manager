@@ -135,8 +135,7 @@ module Alexandria
 
       def setup_books_listview
         log.debug { 'setup_books_listview' }
-        # FIXME: Make #model= work as well
-        @listview.set_model @listview_model
+        @listview.model = @listview_model
         setup_title_column
         TEXT_COLUMNS.each do |title, iterid|
           setup_text_column title, iterid

@@ -896,8 +896,7 @@ module Alexandria
 
       def append_library(library, autoselect = false)
         log.debug { "append_library #{library.name}" }
-        # FIXME: Make #model work as well
-        model = @library_listview.get_model
+        model = @library_listview.model
         is_smart = library.is_a?(SmartLibrary)
         if is_smart
           if @library_separator_iter.nil?
