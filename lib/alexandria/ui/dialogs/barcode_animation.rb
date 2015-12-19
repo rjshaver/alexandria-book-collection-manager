@@ -107,7 +107,6 @@ module Alexandria
       def draw_barcode_bars
         @barcode_data.each do |space_width, bar_width|
           @hpos += space_width
-          # FIXME: Add override for CanvasRect.new and Object.new
           # FIXME: Should set parent to @root.
 
           params = {
@@ -118,13 +117,7 @@ module Alexandria
             line_width: 0,
             fill_color: 'white'
           }
-          gparams = params.map do |name, value|
-            GObject::Parameter.new.tap do |gparam|
-              gparam.name = name.to_s
-              gparam.value = value
-            end
-          end
-          rect_item = GooCanvas::CanvasRect.new(gparams)
+          rect_item = GooCanvas::CanvasRect.new(params)
           @hpos += bar_width
           @barcode_bars << rect_item
         end
