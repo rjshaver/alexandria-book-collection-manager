@@ -207,7 +207,7 @@ module Alexandria
       end
 
       def setup_check_column(title, iterid)
-        renderer = CellRendererToggle.new
+        renderer = Gtk::CellRendererToggle.new
         renderer.activatable = true
         renderer.signal_connect('toggled') do |_rndrr, path|
           begin
@@ -245,7 +245,7 @@ module Alexandria
             log.error { "toggle failed for path #{path} #{e}\n" + e.backtrace.join("\n") }
           end
         end
-        column = Gtk::TreeViewColumn.new_with_attributes(title, renderer, text: iterid)
+        column = Gtk::TreeViewColumn.new_with_attributes(title, renderer)
         (column.widget = Gtk::Label.new(title)).show
         column.sort_column_id = iterid
         column.resizable = true
