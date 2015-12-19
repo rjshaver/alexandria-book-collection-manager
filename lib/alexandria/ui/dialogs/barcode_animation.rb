@@ -107,15 +107,14 @@ module Alexandria
       def draw_barcode_bars
         @barcode_data.each do |space_width, bar_width|
           @hpos += space_width
-          # FIXME: Should set parent to @root.
-
           params = {
             x: @bar_left_edge + @scale * @hpos,
             y: @bar_top,
             width: @scale * bar_width,
             height: @bar_height,
             line_width: 0,
-            fill_color: 'white'
+            fill_color: 'white',
+            parent: @root
           }
           rect_item = GooCanvas::CanvasRect.new(params)
           @hpos += bar_width
