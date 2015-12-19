@@ -408,7 +408,6 @@ module Alexandria
         first_action.signal_connect 'changed' do |_action, current, _user_data|
           @notebook.page = current.current_value
           hid = @toolbar_view_as_signal_hid
-          # FIXME: Make this a method with block on GObject::Object?
           GObject.signal_handler_block(@toolbar_view_as, hid)
           @toolbar_view_as.active = current.current_value
           GObject.signal_handler_unblock(@toolbar_view_as, hid)
