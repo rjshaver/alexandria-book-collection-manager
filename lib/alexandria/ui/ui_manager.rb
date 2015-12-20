@@ -929,9 +929,8 @@ module Alexandria
         log.debug { 'append_library_separator' }
         model = @library_listview.model
         iter = model.append
-        # FIXME: Override #set_value to fetch the column gtype from the model.
-        model.set_value(iter, 0, GObject::Value.for_gtype(GdkPixbuf::Pixbuf.gtype))
-        model.set_value(iter, 1, GObject::Value.for_gtype(GObject::TYPE_STRING))
+        model.set_value(iter, 0, nil)
+        model.set_value(iter, 1, nil)
         model.set_value(iter, 2, false)     # editable?
         model.set_value(iter, 3, true)      # separator?
         iter
