@@ -40,7 +40,7 @@ class IconViewTooltips
     @tooltip_window.app_paintable = true
 
     @tooltip_window.signal_connect('draw') { |window, cr|
-      on_expose(window, _cr)
+      on_expose(window, cr)
     }
 
     @tooltip_window.signal_connect('leave-notify-event') { |vw, event|
