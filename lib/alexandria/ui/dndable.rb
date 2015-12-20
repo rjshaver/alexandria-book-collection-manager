@@ -19,7 +19,7 @@
 
 module Alexandria
   module UI
-    BOOKS_TARGET_TABLE = [["ALEXANDRIA_BOOKS", :same_app, 0]]
+    BOOKS_TARGET_TABLE = [Gtk::TargetEntry.new("ALEXANDRIA_BOOKS", :same_app, 0)]
 
     module DragAndDropable
       BADGE_MARKUP = "<span weight=\"heavy\" foreground=\"white\">%d</span>"

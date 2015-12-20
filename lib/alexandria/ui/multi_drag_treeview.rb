@@ -60,11 +60,7 @@ class Gtk::TreeView
   setup_instance_method :enable_model_drag_source
   alias_method :old_enable_model_drag_source, :enable_model_drag_source
   def enable_model_drag_source(start_button_mask, targets, actions)
-    # FIXME: Extract to gir_ffi-gtk?
-    entries = targets.map do |target, flags, info|
-      Gtk::TargetEntry.new(target, Gtk::TargetFlags[flags], info)
-    end
-    old_enable_model_drag_source(start_button_mask, entries, actions)
+    old_enable_model_drag_source(start_button_mask, targets, actions)
 
     # FIXME: Re-enable or re-implement
     if false
@@ -78,16 +74,6 @@ class Gtk::TreeView
           button_press_event(event)
         end
     end
-  end
-
-  # FIXME: Extract to gir_ffi-gtk.
-  setup_instance_method :enable_model_drag_dest
-  alias_method :old_enable_model_drag_dest, :enable_model_drag_dest
-  def enable_model_drag_dest(targets, actions)
-    entries = targets.map do |target, flags, info|
-      Gtk::TargetEntry.new(target, Gtk::TargetFlags[flags], info)
-    end
-    old_enable_model_drag_dest(entries, actions)
   end
 
   def drag_context
