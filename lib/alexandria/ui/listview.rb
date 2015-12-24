@@ -18,23 +18,6 @@
 # write to the Free Software Foundation, Inc., 51 Franklin Street,
 # Fifth Floor, Boston, MA 02110-1301 USA.
 
-module Gtk
-  load_class :TreeViewColumn
-
-  class TreeViewColumn
-    # FIXME: Move to gir_ffi-gtk
-    def self.new_with_attributes(title, renderer, attributes = {})
-      new.tap do |column|
-        column.set_title title
-        column.pack_start(renderer, false)
-        attributes.each do |name, id|
-          column.add_attribute(renderer, name.to_s, id)
-        end
-      end
-    end
-  end
-end
-
 module Alexandria
   module UI
     include Logging

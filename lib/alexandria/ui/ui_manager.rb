@@ -17,20 +17,6 @@
 # write to the Free Software Foundation, Inc., 51 Franklin Street,
 # Fifth Floor, Boston, MA 02110-1301 USA.
 
-module Gtk
-  load_class :Container
-
-  class Container
-    # FIXME: Move to gir_ffi-gtk
-    def add_with_properties(widget, properties)
-      add(widget)
-      properties.each do |key, value|
-        child_set_property(widget, key.to_s, value)
-      end
-    end
-  end
-end
-
 module GLib
   setup_method :idle_add
 
