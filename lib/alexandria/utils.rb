@@ -16,8 +16,7 @@
 # write to the Free Software Foundation, Inc., 51 Franklin Street,
 # Fifth Floor, Boston, MA 02110-1301 USA.
 
-# FIXME: Would like to just require ffi-glib.
-require 'gir_ffi'
+require 'ffi-glib'
 
 class String
   # Converts this string into the desired charset.
@@ -27,6 +26,6 @@ class String
   # the string, e.g. trying to convert Japanese Kanji to ISO-8859-1
   # will obviously not work.
   def convert(desired_charset, source_data_charset)
-    GLib.convert(self, desired_charset, source_data_charset)
+    GLib.convert(self, -1, desired_charset, source_data_charset).first
   end
 end

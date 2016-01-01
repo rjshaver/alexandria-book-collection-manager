@@ -42,7 +42,13 @@ describe Time do
 end
 
 describe String do
-  it 'should do what it does'
+  describe '#convert' do
+    it 'converts the string as instructed' do
+      source = 'état'
+      result = source.convert('ISO-8859-1', 'UTF-8')
+      expect(result.bytes).to eq [233, 116, 97, 116]
+    end
+  end
 end
 
 describe Alexandria::WebTheme do
