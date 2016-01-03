@@ -856,7 +856,7 @@ module Alexandria
           icon = icon.tag(Icons::FAVORITE_TAG)
         end
         @model.set_value(iter, Columns::COVER_ICON, icon)
-        log.debug { 'Full iter: ' + (0..15).map { |num| @model.get_value(iter, num).get_value.inspect }.join(', ') }
+        log.debug { 'Full iter: ' + (0..15).map { |num| @model.get_value(iter, num).inspect }.join(', ') }
       end
 
       def append_book(book, _tail = nil)
@@ -974,7 +974,7 @@ module Alexandria
         log.debug { 'selected_library' }
         result, model, iter = @library_listview.selection.selected
         if result
-          wanted_name = model.get_value(iter, 1).get_value
+          wanted_name = model.get_value(iter, 1)
           @libraries.all_libraries.find { |x| x.name == wanted_name }
         else
           @libraries.all_libraries.first

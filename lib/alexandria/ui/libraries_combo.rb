@@ -32,7 +32,7 @@ class Gtk::ComboBox
     end
     clear
     set_row_separator_func(proc do |model, iter|
-      model.get_value(iter, 1).get_value == '-'
+      model.get_value(iter, 1) == '-'
     end, nil, nil)
     self.model = Gtk::ListStore.new([GdkPixbuf::Pixbuf.gtype,
                                      GObject::TYPE_STRING,

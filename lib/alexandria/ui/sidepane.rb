@@ -1,6 +1,6 @@
 # Copyright (C) 2008 Joseph Method
 # Copyright (C) 2008,2009 Cathal Mc Ginley
-# Copyright (C) 2011,2014,2015 Matijs van Zuijlen
+# Copyright (C) 2011,2014,2015,2016 Matijs van Zuijlen
 #
 # Alexandria is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License as
@@ -111,17 +111,15 @@ module Alexandria
         column.pack_start(renderer, false)
         column.set_cell_data_func(renderer, proc do |_col, cell, model, iter|
           # log.debug { "sidepane: cell_data_func #{col}, #{cell}, #{iter}" }
-          # FIXME: Remove need for second get_value
-          cell.pixbuf = model.get_value(iter, 0).get_value
+          cell.pixbuf = model.get_value(iter, 0)
         end, nil, nil)
         renderer = Gtk::CellRendererText.new
         renderer.ellipsize = Pango::ELLIPSIZE_END if Pango.ellipsizable?
         column.pack_start(renderer, true)
         column.set_cell_data_func(renderer, proc do |_col, cell, model, iter|
           # log.debug { "sidepane: editable #{cell}, #{iter} #{iter[1]}: #{iter[2]}" }
-          # FIXME: Unpack result of model#get_value automatically
-          cell.text = model.get_value(iter, 1).get_value
-          cell.editable = model.get_value(iter, 2).get_value
+          cell.text = model.get_value(iter, 1)
+          cell.editable = model.get_value(iter, 2)
           # log.debug { "exit sidepane: editable #{cell}, #{iter}" }
         end, nil, nil)
         renderer.signal_connect('edited', &method(:on_edited_library))
@@ -129,8 +127,7 @@ module Alexandria
 
         @library_listview.set_row_separator_func(proc do |model, iter|
           # log.debug { "library_listview row_separator #{iter}" }
-          # FIXME: Remove need for second get_value
-          model.get_value(iter, 3).get_value
+          model.get_value(iter, 3)
         end, nil, nil)
 
         @library_listview.selection.signal_connect('changed') do
