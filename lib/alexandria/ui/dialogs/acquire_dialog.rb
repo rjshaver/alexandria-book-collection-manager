@@ -1,6 +1,6 @@
 # Copyright (C) 2004-2006 Laurent Sansonetti
 # Copyright (C) 2007 Cathal Mc Ginley
-# Copyright (C) 2011, 2015 Matijs van Zuijlen
+# Copyright (C) 2011, 2015, 2016 Matijs van Zuijlen
 #
 # Alexandria is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License as
@@ -608,7 +608,7 @@ module Alexandria
         pixbuf_renderer = Gtk::CellRendererPixbuf.new
         col = Gtk::TreeViewColumn.new_with_attributes('Cover', pixbuf_renderer)
 
-        col.set_cell_data_func(pixbuf_renderer, proc do |_column, cell, _model, iter|
+        col.set_cell_data_func(pixbuf_renderer, nil, nil) do |_column, cell, _model, iter|
           pixbuf = iter[1]
           if pixbuf
             max_height = 25
@@ -620,7 +620,7 @@ module Alexandria
 
             cell.pixbuf = pixbuf
           end
-        end, nil, nil)
+        end
 
         @barcodes_treeview.append_column(col)
 

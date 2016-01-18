@@ -1,7 +1,7 @@
 # -*- ruby -*-
 #--
 # Copyright (C) 2011 Cathal Mc Ginley
-# Copyright (C) 2015 Matijs van Zuijlen
+# Copyright (C) 2015, 2016 Matijs van Zuijlen
 #
 # This file is part of Alexandria, a GNOME book collection manager.
 #
@@ -70,7 +70,7 @@ module Alexandria
         @loop = GLib::MainLoop.new(nil, false)
 
         @bus = @ogg_vorbis_pipeline.bus
-        @bus.add_watch(GLib::PRIORITY_DEFAULT, proc do |_bus, message|
+        @bus.add_watch GLib::PRIORITY_DEFAULT, nil, nil do |_bus, message|
           case message.type
           when Gst::Message::EOS
             @playing = false
@@ -84,7 +84,7 @@ module Alexandria
             @loop.quit
           end
           true
-        end, nil, nil)
+        end
       end
 
       def start_playback

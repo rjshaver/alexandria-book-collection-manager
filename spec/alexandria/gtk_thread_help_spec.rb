@@ -1,4 +1,4 @@
-# Copyright (C) 2015 Matijs van Zuijlen
+# Copyright (C) 2015, 2016 Matijs van Zuijlen
 #
 # Alexandria is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License as
@@ -20,9 +20,9 @@ require 'spec_helper'
 describe Gtk do
   describe '.main_with_queue' do
     it 'runs the Gtk main loop' do
-      GLib.timeout_add(GLib::PRIORITY_DEFAULT, 100, proc do
+      GLib.timeout_add(GLib::PRIORITY_DEFAULT, 100, nil, nil) do
         Gtk.main_quit
-      end, nil, nil)
+      end
       Gtk.main_with_queue
     end
   end

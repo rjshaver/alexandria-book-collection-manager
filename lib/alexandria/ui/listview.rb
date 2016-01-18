@@ -1,7 +1,7 @@
 # Copyright (C) 2004-2006 Laurent Sansonetti
 # Copyright (C) 2008 Joseph Method
 # Copyright (C) 2010 Cathal Mc Ginley
-# Copyright (C) 2011, 2015 Matijs van Zuijlen
+# Copyright (C) 2011, 2015, 2016 Matijs van Zuijlen
 #
 # Alexandria is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License aso
@@ -55,12 +55,11 @@ module Alexandria
         renderer = Gtk::CellRendererPixbuf.new
         column.pack_start(renderer, false)
 
-        # FIXME: Provide nicer access to methods with callback arguments
-        column.set_cell_data_func(renderer, proc do |_col, cell, _model, iter|
+        column.set_cell_data_func(renderer, nil, nil) do |_col, cell, _model, iter|
           iter = @listview_model.convert_iter_to_child_iter(iter)
           iter = @filtered_model.convert_iter_to_child_iter(iter)
           cell.pixbuf = @model.get_value(iter, Columns::COVER_LIST)
-        end, nil, nil)
+        end
         renderer = Gtk::CellRendererText.new
         renderer.ellipsize = Pango::ELLIPSIZE_END if Pango.ellipsizable?
         # Editable tree views are behaving strangely
@@ -68,12 +67,12 @@ module Alexandria
 
         column.pack_start(renderer, true)
 
-        column.set_cell_data_func(renderer, proc do |_col, cell, _model, iter|
+        column.set_cell_data_func(renderer, nil, nil) do |_col, cell, _model, iter|
           iter = @listview_model.convert_iter_to_child_iter(iter)
           iter = @filtered_model.convert_iter_to_child_iter(iter)
           cell.text = @model.get_value(iter, Columns::TITLE)
           cell.editable = false # true
-        end, nil, nil)
+        end
 
         column.sort_column_id = Columns::TITLE
         column.resizable = true
@@ -175,13 +174,13 @@ module Alexandria
         MAX_RATING_STARS.times do |i|
           renderer = Gtk::CellRendererPixbuf.new
           column.pack_start(renderer, false)
-          column.set_cell_data_func(renderer, proc do |_col, cell, _model, iter|
+          column.set_cell_data_func(renderer, nil, nil) do |_col, cell, _model, iter|
             iter = @listview_model.convert_iter_to_child_iter(iter)
             iter = @filtered_model.convert_iter_to_child_iter(iter)
             rating = (@model.get_value(iter, Columns::RATING) - MAX_RATING_STARS).abs
             cell.pixbuf = rating >= i.succ ?
               Icons::STAR_SET : Icons::STAR_UNSET
-          end, nil, nil)
+          end
         end
         column.sort_column_id = Columns::RATING
         column.resizable = false
@@ -238,7 +237,7 @@ module Alexandria
           cell.activatable = true
         end
         log.debug { "Setting cell_data_func for #{renderer}" }
-        column.set_cell_data_func(renderer, proc do |_col, cell, _model, iter|
+        column.set_cell_data_func(renderer, nil, nil) do |_col, cell, _model, iter|
           iter = @listview_model.convert_iter_to_child_iter(iter)
           iter = @filtered_model.convert_iter_to_child_iter(iter)
           case iterid
@@ -251,7 +250,7 @@ module Alexandria
             own_state = @model.get_value(iter, Columns::OWN)
             cell.inconsistent = own_state
           end
-        end, nil, nil)
+        end
         log.debug { "append_column #{column}" }
         @listview.append_column(column)
       end

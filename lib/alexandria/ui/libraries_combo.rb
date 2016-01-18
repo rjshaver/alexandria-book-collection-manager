@@ -1,4 +1,5 @@
 # Copyright (C) 2004-2006 Laurent Sansonetti
+# Copyright (C) 2015, 2016 Matijs van Zuijlen
 #
 # Alexandria is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License as
@@ -31,9 +32,9 @@ class Gtk::ComboBox
       libraries_names.unshift selected_library.name
     end
     clear
-    set_row_separator_func(proc do |model, iter|
+    set_row_separator_func(nil, nil) do |model, iter|
       model.get_value(iter, 1) == '-'
-    end, nil, nil)
+    end
     self.model = Gtk::ListStore.new([GdkPixbuf::Pixbuf.gtype,
                                      GObject::TYPE_STRING,
                                      GObject::TYPE_BOOLEAN])
