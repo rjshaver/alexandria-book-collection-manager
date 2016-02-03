@@ -64,7 +64,7 @@ module Gtk
   #     end
 
   def self.main_with_queue(timeout = 100) # millis
-    GLib.timeout_add(GLib::PRIORITY_DEFAULT, timeout, nil, nil) do
+    GLib.timeout_add(GLib::PRIORITY_DEFAULT, timeout) do
       GTK_PENDING_BLOCKS_LOCK.synchronize do
         for block in GTK_PENDING_BLOCKS
           block.call

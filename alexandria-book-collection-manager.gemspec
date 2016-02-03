@@ -46,9 +46,9 @@ Gem::Specification.new do |s|
   s.add_runtime_dependency('gettext', ['~> 3.1'])
   s.add_runtime_dependency('hpricot', ['~> 0.8.5'])
   s.add_runtime_dependency('htmlentities', ['~> 4.3'])
-  s.add_runtime_dependency('gir_ffi', ['~> 0.9.0.pre0'])
-  s.add_runtime_dependency('gir_ffi-gtk', ['~> 0.9.0.pre0'])
-  s.add_runtime_dependency('gir_ffi-gst', ['0.0.3'])
+  s.add_runtime_dependency('gir_ffi', ['~> 0.9.0'])
+  s.add_runtime_dependency('gir_ffi-gtk', ['~> 0.9.0'])
+  s.add_runtime_dependency('gir_ffi-gst', ['0.0.5'])
 
   s.add_development_dependency('minitest', ['~> 5.0'])
   s.add_development_dependency('rake', ['~> 10.0'])

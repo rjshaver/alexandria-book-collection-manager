@@ -19,8 +19,9 @@ require 'spec_helper'
 
 describe Gtk do
   describe '.main_with_queue' do
+    # FIXME: Actually assert something here!
     it 'runs the Gtk main loop' do
-      GLib.timeout_add(GLib::PRIORITY_DEFAULT, 100, nil, nil) do
+      GLib.timeout_add(GLib::PRIORITY_DEFAULT, 100) do
         Gtk.main_quit
       end
       Gtk.main_with_queue

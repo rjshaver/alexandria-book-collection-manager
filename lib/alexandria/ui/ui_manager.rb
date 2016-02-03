@@ -22,7 +22,7 @@ module GLib
 
   # FIXME: Move to gir_ffi
   def self.idle_add_with_override(priority=GLib::PRIORITY_DEFAULT_IDLE, &block)
-    idle_add_without_override priority, nil, nil, &block
+    idle_add_without_override priority, &block
   end
 
   class << self
@@ -167,7 +167,7 @@ module Alexandria
 
       def setup_toolbar_combobox
         cb = Gtk::ComboBoxText.new
-        cb.set_row_separator_func nil, nil do |model, iter|
+        cb.set_row_separator_func do |model, iter|
           # log.debug { "row_separator" }
           model.get_value(iter, 0) == '-'
         end
@@ -305,7 +305,7 @@ module Alexandria
 
         # Filter books according to the search toolbar widgets.
         @filtered_model = @model.filter_new(nil)
-        @filtered_model.set_visible_func(nil, nil) do |_model, iter|
+        @filtered_model.set_visible_func do |_model, iter|
           # log.debug { "visible_func" }
           @filter_books_mode ||= 0
           filter = @filter_entry.text
@@ -1023,7 +1023,7 @@ module Alexandria
         view = page == 0 ? @iconview : @listview
         selection = page == 0 ? @iconview : @listview.selection
 
-        selection.selected_foreach(nil) do |_the_view, path|
+        selection.selected_foreach do |_the_view, path|
           # don't use the_view which is passed in by this block
           # as it doesn't consider the filtering for some reason
           # see bug #24568

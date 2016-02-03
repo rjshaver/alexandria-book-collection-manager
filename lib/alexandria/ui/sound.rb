@@ -22,7 +22,7 @@
 #++
 
 require 'gir_ffi-gst'
-Gst.init []
+Gst.init
 
 module Alexandria
   module UI
@@ -70,7 +70,7 @@ module Alexandria
         @loop = GLib::MainLoop.new(nil, false)
 
         @bus = @ogg_vorbis_pipeline.bus
-        @bus.add_watch GLib::PRIORITY_DEFAULT, nil, nil do |_bus, message|
+        @bus.add_watch GLib::PRIORITY_DEFAULT do |_bus, message|
           case message.type
           when Gst::Message::EOS
             @playing = false

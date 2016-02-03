@@ -608,7 +608,7 @@ module Alexandria
         pixbuf_renderer = Gtk::CellRendererPixbuf.new
         col = Gtk::TreeViewColumn.new_with_attributes('Cover', pixbuf_renderer)
 
-        col.set_cell_data_func(pixbuf_renderer, nil, nil) do |_column, cell, _model, iter|
+        col.set_cell_data_func(pixbuf_renderer) do |_column, cell, _model, iter|
           pixbuf = iter[1]
           if pixbuf
             max_height = 25

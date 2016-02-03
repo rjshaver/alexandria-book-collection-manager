@@ -55,7 +55,7 @@ module Alexandria
         renderer = Gtk::CellRendererPixbuf.new
         column.pack_start(renderer, false)
 
-        column.set_cell_data_func(renderer, nil, nil) do |_col, cell, _model, iter|
+        column.set_cell_data_func(renderer) do |_col, cell, _model, iter|
           iter = @listview_model.convert_iter_to_child_iter(iter)
           iter = @filtered_model.convert_iter_to_child_iter(iter)
           cell.pixbuf = @model.get_value(iter, Columns::COVER_LIST)
@@ -67,7 +67,7 @@ module Alexandria
 
         column.pack_start(renderer, true)
 
-        column.set_cell_data_func(renderer, nil, nil) do |_col, cell, _model, iter|
+        column.set_cell_data_func(renderer) do |_col, cell, _model, iter|
           iter = @listview_model.convert_iter_to_child_iter(iter)
           iter = @filtered_model.convert_iter_to_child_iter(iter)
           cell.text = @model.get_value(iter, Columns::TITLE)
@@ -174,7 +174,7 @@ module Alexandria
         MAX_RATING_STARS.times do |i|
           renderer = Gtk::CellRendererPixbuf.new
           column.pack_start(renderer, false)
-          column.set_cell_data_func(renderer, nil, nil) do |_col, cell, _model, iter|
+          column.set_cell_data_func(renderer) do |_col, cell, _model, iter|
             iter = @listview_model.convert_iter_to_child_iter(iter)
             iter = @filtered_model.convert_iter_to_child_iter(iter)
             rating = (@model.get_value(iter, Columns::RATING) - MAX_RATING_STARS).abs
@@ -237,7 +237,7 @@ module Alexandria
           cell.activatable = true
         end
         log.debug { "Setting cell_data_func for #{renderer}" }
-        column.set_cell_data_func(renderer, nil, nil) do |_col, cell, _model, iter|
+        column.set_cell_data_func(renderer) do |_col, cell, _model, iter|
           iter = @listview_model.convert_iter_to_child_iter(iter)
           iter = @filtered_model.convert_iter_to_child_iter(iter)
           case iterid

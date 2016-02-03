@@ -32,7 +32,7 @@ class Gtk::ComboBox
       libraries_names.unshift selected_library.name
     end
     clear
-    set_row_separator_func(nil, nil) do |model, iter|
+    set_row_separator_func do |model, iter|
       model.get_value(iter, 1) == '-'
     end
     self.model = Gtk::ListStore.new([GdkPixbuf::Pixbuf.gtype,
