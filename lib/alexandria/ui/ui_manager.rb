@@ -1007,7 +1007,7 @@ module Alexandria
 
       def book_from_iter(library, iter)
         log.debug { "Book from iter: #{library} #{iter}" }
-        library.find { |x| x.ident == iter[Columns::IDENT] }
+        library.find { |x| x.ident == @model.get_value(iter, Columns::IDENT) }
       end
 
       def iter_from_ident(ident)
@@ -1046,8 +1046,8 @@ module Alexandria
             path = @filtered_model.convert_path_to_child_path(path)
             # FIX this sometimes returns a nil path for iconview...
             if path
-              iter = @model.get_iter(path)
-              if iter
+              result, iter = @model.get_iter(path)
+              if result
                 a << book_from_iter(library, iter)
               end
             end
