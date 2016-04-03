@@ -128,7 +128,7 @@
                         <property name="visible">True</property>
                         <property name="can_focus">True</property>
                         <property name="margin">0</property>
-                        <signal name="button-press-event" handler="on_books_button_press_event" swapped="no"/>
+                        <signal name="button-press-event" handler="on_books_icons_button_press_event" swapped="no"/>
                         <signal name="focus-in-event" handler="on_focus" swapped="no"/>
                       </object>
                     </child>
@@ -152,7 +152,7 @@
                       <object class="GtkTreeView" id="listview">
                         <property name="visible">True</property>
                         <property name="can_focus">True</property>
-                        <signal name="button-press-event" handler="on_books_button_press_event" swapped="no"/>
+                        <signal name="button-press-event" handler="on_books_tree_button_press_event" swapped="no"/>
                         <signal name="focus-in-event" handler="on_focus" swapped="no"/>
                         <child internal-child="selection">
                           <object class="GtkTreeSelection" id="treeview-selection2"/>

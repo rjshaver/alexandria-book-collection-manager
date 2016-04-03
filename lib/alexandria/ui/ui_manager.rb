@@ -343,37 +343,33 @@ module Alexandria
         if event_is_right_click event
           log.debug { 'library right click!' }
           library_already_selected = true
-          if (path = widget.get_path_at_pos(event.x, event.y))
+
+          obj = widget.selection
+
+          found, *path = widget.get_path_at_pos(event.x, event.y)
+          if found
             @clicking_on_sidepane = true
-            obj, path = widget.is_a?(Gtk::TreeView) ? [widget.selection, path.first] : [widget, path]
+            path = path.first
             widget.has_focus = true
 
             unless obj.path_is_selected(path)
-
               log.debug { "Select #{path}" }
               library_already_selected = false
-              widget.unselect_all
+              obj.unselect_all
               obj.select_path(path)
               sensitize_library selected_library
 
-              if widget.is_a?(Gtk::TreeView)
-                GLib.idle_add do
-                  # cur_path, focus_col = widget.cursor
+              GLib.idle_add do
+                widget.focus = true
 
-                  widget.focus = true
-
-                  widget.set_cursor(path, nil, false)
-                  widget.grab_focus
-                  widget.has_focus = true
-                  false
-                end
-                # widget.has_focus = true
+                widget.set_cursor(path, nil, false)
+                widget.grab_focus
+                widget.has_focus = true
+                false
               end
-
-              # library_already_selected = true
             end
           else
-            widget.unselect_all
+            obj.unselect_all
           end
 
           menu = determine_library_popup widget, event
@@ -389,19 +385,11 @@ module Alexandria
 
           if library_already_selected
             sensitize_library selected_library
+          end
 
-            GLib.idle_add do
-              menu.popup(nil, nil, event.button, event.time)
-              # @clicking_on_sidepane = false
-              false
-            end
-          else
-            GLib.idle_add do
-              menu.popup(nil, nil, event.button, event.time)
-              # @clicking_on_sidepane = false
-
-              false
-            end
+          GLib.idle_add do
+            menu.popup(nil, nil, event.button, event.time)
+            false
           end
 
         else
@@ -409,7 +397,7 @@ module Alexandria
           found, *path = widget.get_path_at_pos(event.x, event.y)
           if found
             @clicking_on_sidepane = true
-            obj, path = widget.is_a?(Gtk::TreeView) ? [widget.selection, path.first] : [widget, path]
+            obj, path = [widget.selection, path.first]
             obj.select_path(path)
             sensitize_library selected_library
           end
@@ -425,21 +413,44 @@ module Alexandria
         event.type == :button_press and event.button == 3
       end
 
-      def on_books_button_press_event(widget, event, _user_data)
+      def on_books_icon_button_press_event(widget, event, _user_data)
         log.debug { 'books_button_press_event' }
         if event_is_right_click event
           widget.grab_focus
 
           if (path = widget.get_path_at_pos(event.x.to_i, event.y.to_i))
-            obj, path = widget.is_a?(Gtk::TreeView) ? [widget.selection, path.first] : [widget, path]
-
-            unless obj.path_is_selected(path)
+            unless widget.path_is_selected(path)
               log.debug { "Select #{path}" }
               widget.unselect_all
-              obj.select_path(path)
+              widget.select_path(path)
             end
           else
             widget.unselect_all
+          end
+
+          menu = (selected_books.empty?) ? @nobook_popup : @book_popup
+          menu.popup(nil, nil, event.button, event.time)
+        end
+      end
+
+      def on_books_tree_button_press_event(widget, event, _user_data)
+        log.debug { 'books_button_press_event' }
+        if event_is_right_click event
+          widget.grab_focus
+
+          found, *path = widget.get_path_at_pos(event.x.to_i, event.y.to_i)
+
+          obj = widget.selection
+          if found
+            path = path.first
+
+            unless obj.path_is_selected(path)
+              log.debug { "Select #{path}" }
+              obj.unselect_all
+              obj.select_path(path)
+            end
+          else
+            obj.unselect_all
           end
 
           menu = (selected_books.empty?) ? @nobook_popup : @book_popup
