@@ -120,7 +120,7 @@ class IconViewTooltips
       if @latest_iter.nil?
         @latest_iter = iter
 
-        @tooltip_timeout_id = Gtk.timeout_add(250) do
+        @tooltip_timeout_id = GLib.timeout_add(GLib::PRIORITY_DEFAULT, 250) do
           if @latest_iter == iter
 
             title = iter[2] # HACK hardcoded, should use column names...

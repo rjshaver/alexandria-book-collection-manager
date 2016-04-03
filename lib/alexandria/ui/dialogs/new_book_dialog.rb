@@ -208,7 +208,7 @@ module Alexandria
           end
         end
 
-        Gtk.timeout_add(100) do
+        GLib.timeout_add(GLib::PRIORITY_DEFAULT, 100) do
           if @image_error
             image_error_dialog(@image_error)
           else
@@ -256,7 +256,7 @@ module Alexandria
                end
 
         # @progressbar.show
-        # progress_pulsing = Gtk.timeout_add(100) do
+        # progress_pulsing = GLib.timeout_add(GLib::PRIORITY_DEFAULT, 100) do
         #  if @destroyed
         #    false
         #  else
@@ -297,7 +297,7 @@ module Alexandria
           false
         end
 
-        Gtk.timeout_add(100) do
+        GLib.timeout_add(GLib::PRIORITY_DEFAULT, 100) do
           # This block copies results into the tree view, or shows an
           # error if the search failed.
 
@@ -526,7 +526,7 @@ module Alexandria
       def notify_start_add_by_isbn
         main_progress_bar = MainApp.instance.appbar.children.first
         main_progress_bar.visible = true
-        @progress_pulsing = Gtk.timeout_add(100) do
+        @progress_pulsing = GLib.timeout_add(GLib::PRIORITY_DEFAULT, 100) do
           if @destroyed
             false
           else

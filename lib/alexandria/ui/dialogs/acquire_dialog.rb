@@ -296,7 +296,7 @@ module Alexandria
         GLib.idle_add do
           main_progress_bar = MainApp.instance.appbar.children.first
           main_progress_bar.visible = true
-          @progress_pulsing = Gtk.timeout_add(100) do
+          @progress_pulsing = GLib.timeout_add(GLib::PRIORITY_DEFAULT, 100) do
             if @destroyed
               false
             else

@@ -57,7 +57,7 @@ module Alexandria
       end
 
       def start
-        @timeout = Gtk.timeout_add(20) do
+        @timeout = GLib.timeout_add(GLib::PRIORITY_DEFAULT, 20) do
           scan_animation
           (@index >= 0)
         end
@@ -137,9 +137,9 @@ module Alexandria
           @index += 1
         else
           @index = -1
-          Gtk.timeout_add(5) do
+          GLib.timeout_add(GLib::PRIORITY_DEFAULT, 5) do
             @barcode_bars.each { |rect| rect.set_property(:fill_color_rgba, 0x000000C0) }
-            Gtk.timeout_add(15) do
+            GLib.timeout_add(GLib::PRIORITY_DEFAULT, 15) do
               fade_animation
               (@fade_opacity != -1)
             end

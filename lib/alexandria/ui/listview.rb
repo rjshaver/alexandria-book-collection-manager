@@ -155,7 +155,7 @@ module Alexandria
           # Dirty hack to avoid the beginning of a drag within this
           # handler.
           log.debug { 'row-activated' }
-          Gtk.timeout_add(100) do
+          GLib.timeout_add(GLib::PRIORITY_DEFAULT, 100) do
             @actiongroup['Properties'].activate
             false
           end

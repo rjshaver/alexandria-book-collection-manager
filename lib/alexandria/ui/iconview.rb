@@ -65,7 +65,7 @@ module Alexandria
           # Dirty hack to avoid the beginning of a drag within this
           # handler.
           @tooltips.hide_tooltip
-          Gtk.timeout_add(100) do
+          GLib.timeout_add(GLib::PRIORITY_DEFAULT, 100) do
             @actiongroup['Properties'].activate
             false
           end
