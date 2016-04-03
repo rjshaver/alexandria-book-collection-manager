@@ -859,7 +859,7 @@ module Alexandria
         log.debug { 'Full iter: ' + (0..15).map { |num| @model.get_value(iter, num).inspect }.join(', ') }
       end
 
-      def append_book(book, _tail = nil)
+      def append_book(book)
         log.debug { @model.inspect }
         iter = @model.append
         log.debug { "iter == #{iter}" }
