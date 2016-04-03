@@ -126,7 +126,7 @@ class Gtk::TreeView
     return false if path.nil?
 
     # call_parent = (event.state.control_mask? or event.state.shift_mask?) or !selected or event.button != 1
-    call_parent = !selection.path_is_selected?(path) or
+    call_parent = !selection.path_is_selected(path) or
       event.button != 1
 
     if call_parent
@@ -135,7 +135,7 @@ class Gtk::TreeView
       end
     end
 
-    if selection.path_is_selected?(path)
+    if selection.path_is_selected(path)
       @context.pending_event = true
       @context.pressed_button = event.button
       @context.x = event.x

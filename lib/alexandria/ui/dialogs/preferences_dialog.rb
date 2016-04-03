@@ -364,7 +364,7 @@ module Alexandria
             if (path = widget.get_path_at_pos(event.x, event.y))
               widget.grab_focus
               obj, path = widget.selection, path.first
-              unless obj.path_is_selected?(path)
+              unless obj.path_is_selected(path)
                 widget.unselect_all
                 obj.select_path(path)
               end

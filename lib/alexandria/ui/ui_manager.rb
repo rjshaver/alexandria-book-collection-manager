@@ -348,7 +348,7 @@ module Alexandria
             obj, path = widget.is_a?(Gtk::TreeView) ? [widget.selection, path.first] : [widget, path]
             widget.has_focus = true
 
-            unless obj.path_is_selected?(path)
+            unless obj.path_is_selected(path)
 
               log.debug { "Select #{path}" }
               library_already_selected = false
@@ -433,7 +433,7 @@ module Alexandria
           if (path = widget.get_path_at_pos(event.x.to_i, event.y.to_i))
             obj, path = widget.is_a?(Gtk::TreeView) ? [widget.selection, path.first] : [widget, path]
 
-            unless obj.path_is_selected?(path)
+            unless obj.path_is_selected(path)
               log.debug { "Select #{path}" }
               widget.unselect_all
               obj.select_path(path)
