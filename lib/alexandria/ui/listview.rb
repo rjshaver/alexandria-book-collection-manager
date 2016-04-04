@@ -51,54 +51,19 @@ module Alexandria
         log.debug { 'Create listview column for %s' % title }
         column = Gtk::TreeViewColumn.new
         column.set_title title
-        (column.widget = Gtk::Label.new(title)).show
+
         renderer = Gtk::CellRendererPixbuf.new
         column.pack_start(renderer, false)
+        column.add_attribute(renderer, 'pixbuf', Columns::COVER_LIST)
 
-        column.set_cell_data_func(renderer) do |_col, cell, _model, iter|
-          iter = @listview_model.convert_iter_to_child_iter(iter)
-          iter = @filtered_model.convert_iter_to_child_iter(iter)
-          cell.pixbuf = @model.get_value(iter, Columns::COVER_LIST)
-        end
         renderer = Gtk::CellRendererText.new
         renderer.ellipsize = Pango::ELLIPSIZE_END if Pango.ellipsizable?
-        # Editable tree views are behaving strangely
-        # make_renderer_editable renderer
-
         column.pack_start(renderer, true)
-
-        column.set_cell_data_func(renderer) do |_col, cell, _model, iter|
-          iter = @listview_model.convert_iter_to_child_iter(iter)
-          iter = @filtered_model.convert_iter_to_child_iter(iter)
-          cell.text = @model.get_value(iter, Columns::TITLE)
-          cell.editable = false # true
-        end
+        column.add_attribute(renderer, 'text', Columns::TITLE)
 
         column.sort_column_id = Columns::TITLE
         column.resizable = true
         @listview.append_column(column)
-      end
-
-      def make_renderer_editable(renderer)
-        renderer.signal_connect('editing_started') do |_cell, entry, _path_string|
-          log.debug { 'editing_started' }
-          entry.complete_titles
-        end
-
-        renderer.signal_connect('edited') do |_cell, path_string, new_string|
-          log.debug { 'edited' }
-          path = Gtk::TreePath.new(path_string)
-          path = @listview_model.convert_path_to_child_path(path)
-          path = @filtered_model.convert_path_to_child_path(path)
-          iter = @listview.model.get_iter(path)
-          book = @parent.book_from_iter(@parent.selected_library, iter)
-          book.title = new_string
-          @listview.freeze
-          @iconview.freeze
-          @parent.fill_iter_with_book(iter, book)
-          @iconview.unfreeze
-          @listview.unfreeze
-        end
       end
 
       TEXT_COLUMNS = [
@@ -132,7 +97,7 @@ module Alexandria
           @parent.on_books_selection_changed
         end
         setup_tags_column
-        setup_listview_hack
+        setup_row_activation
         setup_view_source_dnd(@listview)
       end
 
@@ -144,21 +109,16 @@ module Alexandria
         renderer.ellipsize = Pango::ELLIPSIZE_END if Pango.ellipsizable?
         column = Gtk::TreeViewColumn.new_with_attributes(title, renderer,
                                                          text: Columns::TAGS)
-        (column.widget = Gtk::Label.new(title)).show
         column.sort_column_id = Columns::TAGS
         column.resizable = true
         @listview.append_column(column)
       end
 
-      def setup_listview_hack
+      def setup_row_activation
         @listview.signal_connect('row-activated') do
-          # Dirty hack to avoid the beginning of a drag within this
-          # handler.
           log.debug { 'row-activated' }
-          GLib.timeout_add(GLib::PRIORITY_DEFAULT, 100) do
-            @actiongroup['Properties'].activate
-            false
-          end
+          @actiongroup['Properties'].activate
+          false
         end
       end
 
@@ -167,7 +127,6 @@ module Alexandria
         log.debug { 'Create listview column for %s...' % title }
         column = Gtk::TreeViewColumn.new
         column.set_title title
-        (column.widget = Gtk::Label.new(title)).show
         column.sizing = :fixed
         column.fixed_width = column.min_width = column.max_width =
           (Icons::STAR_SET.width + 1) * MAX_RATING_STARS
@@ -175,8 +134,6 @@ module Alexandria
           renderer = Gtk::CellRendererPixbuf.new
           column.pack_start(renderer, false)
           column.set_cell_data_func(renderer) do |_col, cell, _model, iter|
-            iter = @listview_model.convert_iter_to_child_iter(iter)
-            iter = @filtered_model.convert_iter_to_child_iter(iter)
             rating = (@model.get_value(iter, Columns::RATING) - MAX_RATING_STARS).abs
             cell.pixbuf = rating >= i.succ ?
               Icons::STAR_SET : Icons::STAR_UNSET
@@ -227,7 +184,6 @@ module Alexandria
           end
         end
         column = Gtk::TreeViewColumn.new_with_attributes(title, renderer)
-        (column.widget = Gtk::Label.new(title)).show
         column.sort_column_id = iterid
         column.resizable = true
         log.debug { 'Create listview column for %s...' % title }
@@ -236,21 +192,12 @@ module Alexandria
           cell.set_active(state)
           cell.activatable = true
         end
-        log.debug { "Setting cell_data_func for #{renderer}" }
-        column.set_cell_data_func(renderer) do |_col, cell, _model, iter|
-          iter = @listview_model.convert_iter_to_child_iter(iter)
-          iter = @filtered_model.convert_iter_to_child_iter(iter)
-          case iterid
-          when 12
-            setup_column.call(@model, iter, cell, Columns::REDD)
-          when 13
-            setup_column.call(@model, iter, cell, Columns::OWN)
-          when 14
-            setup_column.call(@model, iter, cell, Columns::WANT)
-            own_state = @model.get_value(iter, Columns::OWN)
-            cell.inconsistent = own_state
-          end
+
+        column.add_attribute(renderer, 'active', iterid)
+        if iterid == Columns::WANT
+          column.add_attribute(renderer, 'inconsistent', Columns::OWN)
         end
+
         log.debug { "append_column #{column}" }
         @listview.append_column(column)
       end
@@ -261,7 +208,6 @@ module Alexandria
         renderer.ellipsize = Pango::ELLIPSIZE_END if Pango.ellipsizable?
         column = Gtk::TreeViewColumn.new_with_attributes(title, renderer,
                                                          text: iterid)
-        (column.widget = Gtk::Label.new(title)).show
         column.sort_column_id = iterid
         column.resizable = true
         @listview.append_column(column)

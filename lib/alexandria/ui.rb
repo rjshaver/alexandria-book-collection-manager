@@ -21,7 +21,6 @@ Gtk.init
 
 GirFFI.setup 'GdkPixbuf', '2.0'
 
-require 'alexandria/ui/gtk_thread_help'
 require 'alexandria/ui/icons'
 require 'alexandria/ui/builder_base'
 require 'alexandria/ui/completion_models'
@@ -46,7 +45,7 @@ module Alexandria
       puts '====================================' if $DEBUG
       log.info { 'Starting Gtk...' }
       puts '====================================' if $DEBUG
-      Gtk.main_with_queue
+      Gtk.main
     end
     def self.main
       init_icons

@@ -32,7 +32,7 @@ module Alexandria
                [_('_Keep'), Gtk::Dialog::RESPONSE_OK]],
               _("The book titled '%s' has an invalid ISBN, but still " \
                 'exists in the providers libraries.  Do you want to ' \
-                'keep the book but change the ISBN or cancel the add?') % book.title)
+                'keep the book but change the ISBN or cancel the addition?') % book.title)
         self.default_response = Gtk::Dialog::RESPONSE_OK
         show_all and @response = run
         destroy
@@ -538,21 +538,22 @@ module Alexandria
 
       def notify_end_add_by_isbn
         MainApp.instance.appbar.children.first.visible = false
-        Gtk.timeout_remove(@progress_pulsing)
+        if @progress_pulsing
+          Gtk.timeout_remove(@progress_pulsing)
+          @progress_pulsing = nil
+        end
       end
 
       def update(status, provider)
-        Gtk.queue do
-          messages = {
-            searching: _("Searching Provider '%s'..."),
-            error: _("Error while Searching Provider '%s'"),
-            not_found: _("Not Found at Provider '%s'"),
-            found: _("Found at Provider '%s'")
-          }
-          message = messages[status] % provider
-          log.debug { "update message : #{message}" }
-          MainApp.instance.ui_manager.set_status_label(message)
-        end
+        messages = {
+          searching: _("Searching Provider '%s'..."),
+          error: _("Error while Searching Provider '%s'"),
+          not_found: _("Not Found at Provider '%s'"),
+          found: _("Found at Provider '%s'")
+        }
+        message = messages[status] % provider
+        log.debug { "update message : #{message}" }
+        MainApp.instance.ui_manager.set_status_label(message)
       end
 
       def on_focus

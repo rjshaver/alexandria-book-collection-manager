@@ -629,9 +629,7 @@ module Alexandria
           @actiongroup['Redo'].sensitive = caller.can_redo?
         elsif caller.is_a?(Library)
           unless caller.updating?
-            Gtk.queue do
-              handle_update_caller_library ary
-            end
+            handle_update_caller_library ary
           end
         else
           raise 'unrecognized update event'
@@ -951,30 +949,23 @@ module Alexandria
           block_return = true
           book = library[n]
           if book
-            Gtk.queue do
-              append_book(book)
-              # convert to percents
-              coeff = total / 100.0
-              percent = n / coeff
-              fraction = percent / 100
-              log.debug { "#index #{n} percent #{percent} fraction #{fraction}" }
-              @progressbar.fraction = fraction
-              n += 1
-            end
+            append_book(book)
+            fraction = n * 1.0 / total
+            log.debug { "#index #{n} fraction #{fraction}" }
+            @progressbar.fraction = fraction
+            n += 1
           else
-            Gtk.queue do
-              @iconview.unfreeze
-              @listview.unfreeze # NEW / bdewey
-              @filtered_model.refilter
-              @listview.columns_autosize
-              @progressbar.fraction = 1
-              # Hide the progress bar.
-              @appbar.children.first.visible = false
-              # Refresh the status bar.
-              on_books_selection_changed
-              @library_listview.set_sensitive(true)
-              block_return = false
-            end
+            @iconview.unfreeze
+            @listview.unfreeze # NEW / bdewey
+            @filtered_model.refilter
+            @listview.columns_autosize
+            @progressbar.fraction = 1
+            # Hide the progress bar.
+            @appbar.children.first.visible = false
+            # Refresh the status bar.
+            on_books_selection_changed
+            @library_listview.set_sensitive(true)
+            block_return = false
           end
 
           block_return
@@ -1156,7 +1147,7 @@ module Alexandria
         @prefs.selected_library = selected_library.name
         cols_width = {}
         @listview.columns.each do |c|
-          cols_width[c.title] = [c.widget.get_size_request.first, c.width].max
+          cols_width[c.title] = c.width
         end
         @prefs.cols_width = '{' + cols_width.to_a.map do |t, v|
           '"' + t + '": ' + v.to_s
